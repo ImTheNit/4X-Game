@@ -3,8 +3,10 @@ package com.projet.model;
 public class City extends Tile{
 
     private int defensePoints;
+    private int maxDefensePoints;
     private static final int productionRessources = 5;
-    private Player owner; 
+    private Player owner;
+
 
     /**
      * @name Constructor with all parameters
@@ -14,9 +16,10 @@ public class City extends Tile{
      * @param defensePoints : defensive point of the city
      * @param owner : name of the owner of the city
      */
-    public City(int x, int y, int defensePoints, Player owner) {
+    public City(int x, int y, int maxDefensePoints, Player owner) {
         super(x,y,"City","");
-        this.defensePoints = defensePoints;
+        this.maxDefensePoints = maxDefensePoints;
+        this.defensePoints = maxDefensePoints;
         this.owner = owner;
     }
     /**
@@ -62,7 +65,9 @@ public class City extends Tile{
     public Player getOwner() {
         return owner;
     }
-
+    public int getMaxDefensePoints() {
+		return maxDefensePoints;
+	}
     /*
      *  Setters
      */
@@ -74,7 +79,9 @@ public class City extends Tile{
     public void setOwner(Player owner) {
         this.owner = owner;
     }
-    
+	public void setMaxDefensePoints(int maxDefensePoints) {
+		this.maxDefensePoints = maxDefensePoints;
+	}
     
     /*
      * methods
@@ -85,7 +92,7 @@ public class City extends Tile{
      * 
      * @param player : new owner of the city
      */
-    private void newOwner(Player player) {
+    void newOwner(Player player) {
     	//control that new owner is not the same as the old one
     	if (player==owner) {
     		return ;
@@ -98,10 +105,13 @@ public class City extends Tile{
     	player.addCities(this);
     	//add new player as owner of the city
     	this.setOwner(player);
-    	
+    	//restore the defensePoint of the city
+    	this.restoreDefensePoint();
     	
     }
-    
+    private void restoreDefensePoint() {
+    	defensePoints = maxDefensePoints;
+    }
     
     /**
      * give ressource to the owner of the city
@@ -111,4 +121,6 @@ public class City extends Tile{
     		owner.setProductionPoints(owner.getProductionPoints()+productionRessources);
     	}
     }
+
+
 }

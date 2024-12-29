@@ -102,12 +102,16 @@ public abstract class Tile {
     	}
     }
 
+    
+    
     /**
      * 
      * @param s : the soldier to add to the Tile
      */
-    private void addUnit(Soldier s) {
-    	if(unit!=null) {
+    void addUnit(Soldier s) {
+    	if(unit!=null 
+    			&& s.getPositionX() == x
+    			&& s.getPositionY() == y) {
     		this.setUnit(s);
     	}
     	
@@ -117,7 +121,7 @@ public abstract class Tile {
      * 
      * @return the unit remove from the Tile
      */
-    private Soldier removeUnit() {
+    Soldier removeUnit() {
     	if (unit != null) {
 	    	Soldier ret = this.getUnit();
 	    	this.setUnit(null);
