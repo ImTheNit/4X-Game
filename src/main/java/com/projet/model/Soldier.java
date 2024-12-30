@@ -11,6 +11,7 @@ public class Soldier {
 	private int X;
 	private int Y;
 	private Map map;
+	private int maxDefence = 10;
 	private int defence =10;
 	private Player owner;
 	private static final int sizeDice = 10;
@@ -28,6 +29,7 @@ public class Soldier {
 		setPositionX(x);
 		setPositionY(y);
 		setDefence(def);
+		setMaxDefence(def);
 		setOwner(owner);
 		setMap(map);
 		map.getTile(X, Y).addUnit(this);
@@ -61,6 +63,9 @@ public class Soldier {
 	public Map getMap() {
 		return map;
 	}
+	public int getMaxDefence() {
+		return maxDefence;
+	}
 	public int getDefence() {
 		return defence;
 	}
@@ -83,114 +88,165 @@ public class Soldier {
 	public void setMap(Map m) {
 		map = m;;
 	}
+	public void setMaxDefence(int maxDefence) {
+		this.maxDefence = maxDefence;
+	}
 	public void setDefence(int def) {
 		defence = def;
 	}
 	public void setOwner(Player owner) {
 		this.owner = owner;
 	}
+
+	
+	/*
+	 * action methods
+	 */
+	//deplacement 
+	public boolean moveNorth() {
+		return move(X, Y - 1);
+	}
+	public boolean moveSouth() {
+		return move(X, Y + 1);
+	}
+	public boolean moveWest() {
+		return move(X - 1,Y);
+	}
+	public boolean moveEast() {
+		return move(X + 1, Y);
+	}
+	
+	//attack 
+	private void attackNorth() {
+		attack(X, Y - 1);
+		moveNorth();
+	}
+	private void attackSouth() {
+		attack(X, Y + 1);
+		moveSouth();
+	}
+	private void attackWest() {
+		attack(X - 1, Y);
+		moveWest();
+	}
+	private void attackEast() {
+		attack(X + 1, Y);
+		moveEast();
+	}
+	
+	/**
+	 * heal the unit of 30 % of it's max HP
+	 */
+	private void heal() {
+		int valueHeal = (int) Math.ceil(getMaxDefence()*0.3);
+		if (getDefence() + valueHeal > getMaxDefence()) {
+			setDefence(getMaxDefence());
+		}else {
+			setDefence(getDefence() + valueHeal);
+		}
+	}
+	
+	//collect ressource (Forest)
+
+	/** 
+	 * @return the amount of collected ressources from the forest
+	 * @return 0 if the tile is not a Forest or no ressources collectable
+	 */
+	private int collectRessource() {
+		if (map.getTile(X, Y).getType()==TileType.FOREST 
+				&& ((Forest) map.getTile(X, Y)).getProductionRessources() > 0 ){
+			 return ((Forest) map.getTile(X, Y)).collectRessources();
+			}else {
+				return 0;
+			}
+	}
+	
 	
 	
 	/*
 	 * deplacement methods
 	 */
+
+	/**
+	 * move to the target tile
+	 * 
+	 * @param x : position x of the target tile 
+	 * @param y : position y of the target tile
+	 * @return true if successfully move, false else
+	 */
+	private boolean move(int x,int y) {
+		//out of map, mountain, not ally city or not free Tile -> return false 
+		if (!validTarget(x, y)		// not a mountain and in the range of the map
+				|| (map.getTile(x, y) instanceof City && ((City) map.getTile(x, y)).getOwner() != this.getOwner()) //destination tile is a City occuped by someone else (or nobody)
+				|| (map.getTile(x,y).getUnit()!= null ) //no unit on the destination tile
+				) {
+			return false;
+		}else {// deplacement
+			map.getTile(x, y).addUnit(this);
+			map.getTile(X, Y).removeUnit();
+			setPositionX(x);
+			setPositionY(y);
+			return true;
+		}
+	}
 	
 	/**
-	 * TODO
-	 * @return true if the tile [x][y] is reachable
+	 * 
+	 * @return true if the tile [x][y] is reachable and false if not (for deplacement or action)
 	 */
-	private boolean canReachXY(int x, int y) {
-		//case of non reachable tile
-		if ( x < 0 || y < 0 							// case of out of map
-				|| x > map.getTiles().length -1			//
+	private boolean validTarget(int x, int y) {
+		//case of non reachable tile :out of map, mountain 
+		
+		if ( x < 0 || y < 0 								// case of out of map
+				|| x > map.getTiles().length -1				//
 				|| y > map.getTiles()[0].length -1			//
-				
+				|| map.getTile(x, y).getType()== TileType.MOUTAIN	// case of moutain
 				) {
 
-			return false;
+			return false;	//out of map or moutain
 		}
 		// if there, then reachable tile
 		return true;
 	}
 	
-	/**
-	 * 
-	 * @return true if the soldier can move North (up)
-	 */
-	private boolean canMoveNorth() {
-		return canReachXY(X,Y-1);
-	}
-	/**
-	 * move the soldier to the North (up) if possible
-	 */
-	private boolean moveNorth() {
-		if (canMoveNorth()) {
-			//add to the new tile
-			map.getTile(X, Y-1).addUnit(this);
-			//remove from the old one
-			map.getTile(X, Y).removeUnit();
-			Y = Y - 1;
-			return true;
-		}
-		
-		return false;
-	}
 	
-	
-	/**
-	 * 
-	 * @return true if the soldier can move West (right)
-	 */
-	private boolean canMoveWest() {
-		return canReachXY(X-1,Y);
-	}
-	/**
-	 * move the soldier to the West (right)
-	 */
-	private void moveWest() {
-		if (canMoveWest()) {
-			map.getTile(X - 1, Y ).addUnit(this);
-			map.getTile(X, Y).removeUnit();
-			X = X - 1;
-		}
-	}
-	
-	//TODO
-	private boolean canMoveSouth() {
-		return canReachXY(X,Y+1);
-	}
-	private void moveSouth() {
-		if (canMoveSouth()) {
-			map.getTile(X, Y + 1).addUnit(this);
-			map.getTile(X, Y).removeUnit();
-			Y = Y + 1;
-		}
-	}
-	
-	
-	
-	//TODO
-	private boolean canMoveEast() {
-		return canReachXY(X-1,Y);
-	}
-	private void moveEast() {
-		if (canMoveEast()) {
-			map.getTile(X-1, Y).addUnit(this);
-			map.getTile(X, Y).removeUnit();
-			X = X - 1;
-		}
-	}
 	
 	
 	/*
 	 * fights methods
 	 */
 	
+	/**
+	 * 
+	 * @param x : Position x of the target 
+	 * @param y : Position y of the target 
+	 */
+	private void attack (int x, int y) {
+		// ennemy unit
+		// enemy city
+		Tile target = map.getTile(x, y);
+		if (target.getType()==TileType.CITY 
+				&& (((City)target).getOwner() == null)
+					||(((City)target).getOwner() != owner)){ // ennemy or neutral city
+			attack((City)target);
+		}else if (target.getUnit() != null						// unit on the target Tile
+				&& target.getUnit().getOwner()!= owner) {		// from another player
+			attack(target.getUnit());
+			
+		}
+	}
+	/**
+	 * 
+	 * @param target : Soldier or City to target 
+	 */
 	private void attack(Object target) {
 		if (target instanceof Soldier) {
 			attackSoldier((Soldier)target);
 		}else if(target instanceof City){
 			attackCity((City)target);
+		}else {
+			//wrong type for target
+			System.out.println("Wrong type for target");
 		}
 	}
 	
@@ -222,11 +278,15 @@ public class Soldier {
 			Random random = new Random();
 			int powerOfHit = random.nextInt(getSizeDice()); // generate a number between 0 and sizeDice
 			
-			if (powerOfHit>=target.getDefensePoints()) {
-				target.newOwner(owner); 
-								
-			}else {
-				target.setDefensePoints(target.getDefensePoints()-powerOfHit); // deal damage
+			if (target.getUnit() != null) { //no defensive unit
+				if (powerOfHit>=target.getDefensePoints()) {
+					target.newOwner(owner); 
+									
+				}else {
+					target.setDefensePoints(target.getDefensePoints()-powerOfHit); // deal damage
+				}
+			}else { //defensive unit
+				attackSoldier(target.getUnit());
 			}
 		}
 	}

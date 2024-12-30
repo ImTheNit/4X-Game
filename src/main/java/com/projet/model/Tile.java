@@ -1,9 +1,10 @@
 package com.projet.model;
 
 public abstract class Tile {
+	
     private int x; 
     private int y;
-    private String type;
+    private TileType type;
     private String image;
     private Soldier unit;
 
@@ -15,7 +16,7 @@ public abstract class Tile {
      * @param type : type of the tile (Plain, Mountain, Forest, City)
      * @param image : URL of the image related to the tile
      */
-    public Tile(int x, int y, String type,String image) {
+    public Tile(int x, int y, TileType type,String image) {
         this.x = x;
         this.y = y;
         this.type=type;
@@ -32,7 +33,7 @@ public abstract class Tile {
     public int getY() {
         return y;
     }
-    public String getType() {
+    public TileType getType() {
         return type;
     }
     public String getImage() {
@@ -51,7 +52,7 @@ public abstract class Tile {
     public void setY(int y) {
         this.y = y;
     }
-    public void setType(String type) {
+    public void setType(TileType type) {
         this.type = type;
     }
     public void setImage(String image) {
@@ -64,16 +65,16 @@ public abstract class Tile {
     
     public String toString() {
     	switch (type) {
-    		case "City":
+    		case CITY:
     			return ("City    ");
     			
-    		case "Plain":
+    		case PLAIN:
     			return ("Plain   ");
     			
-    		case "Forest":    			
+    		case FOREST:    			
     			return ("Forest  ");
     			
-    		case "Mountain":
+    		case MOUTAIN:
     			return ("Mountain");
     			
     		default:

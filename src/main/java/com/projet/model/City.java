@@ -17,7 +17,7 @@ public class City extends Tile{
      * @param owner : name of the owner of the city
      */
     public City(int x, int y, int maxDefensePoints, Player owner) {
-        super(x,y,"City","");
+        super(x,y,TileType.CITY,"");
         this.maxDefensePoints = maxDefensePoints;
         this.defensePoints = maxDefensePoints;
         this.owner = owner;
