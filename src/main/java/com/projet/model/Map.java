@@ -9,6 +9,7 @@ import com.projet.model.Creator.CreatorPlain;
 
 public class Map {
 	private Tile[][] tiles;
+	private static Map map;
 
     /**
      * @name Constructor without parameters, generate a 10x10 map
@@ -114,7 +115,21 @@ public class Map {
 
     
 
-    public String toString() {
+    /**
+	 * @return the map
+	 */
+	public static Map getMap() {
+		return map;
+	}
+	
+	/**
+	 * @param map the map to set
+	 */
+	public static void setMap(Map map) {
+		Map.map = map;
+	}
+	
+	public String toString() {
     	if(tiles==null) {
     		return null;
     	}else {
@@ -159,5 +174,17 @@ public class Map {
     	}
     }
     
+    /**
+     * @name return the vertical size of the map
+     */
+    public int XSize() {
+    	return this.getTiles().length;
+    }
     
+    /**
+     * @name return the horizontal size of the map
+     */
+    public int YSize() {
+    	return this.getTiles()[0].length;
+    }
 }

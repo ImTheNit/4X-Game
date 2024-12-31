@@ -6,7 +6,7 @@ public class Soldier {
 	
 	/**
 	 * position X,Y on the map
-	 * remaining defence
+	 * remaining defense
 	 */
 	private int X;
 	private int Y;
