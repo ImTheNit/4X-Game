@@ -1,7 +1,7 @@
 package com.projet.model;
 
 public class Forest extends Tile{
-	private int productionRessources;
+	private int productionRessources =3;
 
     /**
      * @name Constructor with all parameters
@@ -11,7 +11,7 @@ public class Forest extends Tile{
      * @param productionResources : production of ressource of the forest
      */
     public Forest(int x, int y,int productionRessources) {
-    	super(x,y,"Forest","");
+    	super(x,y,TileType.FOREST,"");
         this.productionRessources = productionRessources;
     }
     /**
@@ -23,7 +23,7 @@ public class Forest extends Tile{
      * @default productionRessources  3 : production of ressource of the forest 
      */
     public Forest(int x, int y) {
-    	this(x,y,3);
+    	super(x,y,TileType.FOREST,"");
     }
 
 
@@ -54,7 +54,6 @@ public class Forest extends Tile{
     	int ret = productionRessources;
     	productionRessources=0;
     	return ret;
-    	
     }
     
 }

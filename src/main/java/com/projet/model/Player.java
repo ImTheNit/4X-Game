@@ -141,7 +141,7 @@ public class Player {
 		this.cities.remove(index);
 	}
 	
-	private void removeUnit(Soldier unit) {
+	void removeUnit(Soldier unit) {
 		for (int i = 0; i < units.size(); i++) {
             if (units.get(i) == unit) {
                 this.removeUnitByIndex(i);
