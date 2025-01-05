@@ -17,7 +17,7 @@ public class City extends Tile{
      * @param owner : name of the owner of the city
      */
     public City(int x, int y, int maxDefensePoints, Player owner) {
-        super(x,y,TileType.CITY,"");
+        super(x,y,TileType.CITY,"city.png");
         this.maxDefensePoints = maxDefensePoints;
         this.defensePoints = maxDefensePoints;
         this.owner = owner;
@@ -92,7 +92,7 @@ public class City extends Tile{
      * 
      * @param player : new owner of the city
      */
-    void newOwner(Player player) {
+    public void newOwner(Player player) {
     	//control that new owner is not the same as the old one
     	if (player==owner) {
     		return ;

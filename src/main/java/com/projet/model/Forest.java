@@ -11,7 +11,7 @@ public class Forest extends Tile{
      * @param productionResources : production of ressource of the forest
      */
     public Forest(int x, int y,int productionRessources) {
-    	super(x,y,TileType.FOREST,"");
+    	super(x,y,TileType.FOREST,"forest.png");
         this.productionRessources = productionRessources;
     }
     /**
@@ -23,7 +23,7 @@ public class Forest extends Tile{
      * @default productionRessources  3 : production of ressource of the forest 
      */
     public Forest(int x, int y) {
-    	super(x,y,TileType.FOREST,"");
+    	super(x,y,TileType.FOREST,"forest.png");
     }
 
 

@@ -9,7 +9,8 @@ CREATE TABLE IF NOT EXISTS Player (
     id INT AUTO_INCREMENT PRIMARY KEY,
     login VARCHAR(50) NOT NULL,
     mot_de_passe VARCHAR(255) NOT NULL,
-    score INT DEFAULT 0
+    score INT DEFAULT 0,
+    ressources INT DEFAULT 0
 );
 
 -- Create the Map table with IF NOT EXISTS condition and add the turn attribute

@@ -33,6 +33,9 @@ public class App {
         SQL sql = new SQL();
         //sql.dropDatabase();
         sql.createDatabase();
+        
+        
+        
 	}
 	
 }

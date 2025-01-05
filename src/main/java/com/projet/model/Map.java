@@ -154,8 +154,9 @@ public class Map {
     
     
     
-    
-    public String printJSP() {
+    // TODO
+    public String printJSP(Player player, Tile selection) {
+    	String repoImage = new String("ressources/images/");
     	if(tiles==null) {
     		return null;
     	}else {
@@ -163,11 +164,54 @@ public class Map {
     		for(int i = 0; i<tiles.length;i++) {
     			ret += "<tr>";
         		for(int j = 0; j<tiles[i].length;j++) {
+        			ret += "<td> <div class=\"image-container\">  ";
         			if (tiles[i][j]!=null) {
-        				ret += "<td>"+tiles[i][j].getImage()+"</td>";
+        				
+        				//background
+        				ret += "<img src=" + repoImage + "plain.png alt = background/Plain width=100 height=100  class=img1>";
+        				
+        				//image of the Tile
+        				ret += "<img src=" + repoImage + tiles[i][j].getImage() +" alt = " + tiles[i][j].toString() + " width=100 height=100  class=img1>";
+        				
+        				//Soldier
+        				if (tiles[i][j].getUnit()!= null) {
+        					//ret += tiles[i][j].getUnit().getImage(); //convertir en html pour incruster l'image
+        					ret += " <img src=" + repoImage + tiles[i][j].getUnit().getImage() +" alt = " + tiles[i][j].getUnit().toString() + " width=100 height=100  class=img2>";
+        				}
+        				
+        				//border
+        				
+        				//selection
+        				if(tiles[i][j]==selection) {
+        					ret += "<img src=" + repoImage + "borderSelectedTile.png alt = borderSelectedTile width=100 height=100  class=img3>";
+        				
+        				//Current Player 
+        				}else if(tiles[i][j].getOwnerTile().equals(player)){
+        					ret += "<img src=" + repoImage + "borderActivePlayer.png alt = borderActivePlayer width=100 height=100  class=img3>";
+        				
+        					//player 0
+        				}else if (tiles[i][j].getOwnerTile().equals(Player.getPlayerList(0))){
+            				ret += "<img src=" + repoImage + "borderPlayer0.png alt = borderPlayer0 width=100 height=100  class=img3>";
+            				
+        					
+        					//Player 1
+        				}else if (tiles[i][j].getOwnerTile().equals(Player.getPlayerList(1))){
+        					ret += "<img src=" + repoImage + "borderPlayer1.png alt = borderPlayer1 width=100 height=100  class=img3>";
+        					
+        					//Player 2
+        				}else if (tiles[i][j].getOwnerTile().equals(Player.getPlayerList(2))){
+        					ret += "<img src=" + repoImage + "borderPlayer2.png alt = borderPlayer2 width=100 height=100  class=img3>";
+        					
+        					//Player 3
+        				}else if (tiles[i][j].getOwnerTile().equals(Player.getPlayerList(3))){
+        					ret += "<img src=" + repoImage + "borderPlayer3.png alt = borderPlayer3 width=100 height=100  class=img3>";	
+        				}
+        				
+        				
         			}else {
-        				ret += "<td>NONE</td>";
+        				ret += "NONE";
         			}
+        			ret += "</div></td>";
         		}
         	}
     		return ret;

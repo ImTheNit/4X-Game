@@ -131,5 +131,35 @@ public abstract class Tile {
     	return null;
     }
 	
+    /**
+     * 
+     * @return the owner of the Tile
+     */
+    Player getOwnerTile() {
+    	
+    	//City
+    	if (getType()==TileType.CITY) {
+    		return ((City) this).getOwner();
+    	}else if(getUnit()!=null && getUnit().getOwner()!=null) {
+    		System.out.println("Owner found");
+    		return getUnit().getOwner();
+    	}
+    	System.out.println("unit :"+getUnit());
+    	return new Player();
+    }
+    
+    
+    @Override
+	public boolean equals(Object o) {
+    	if (o instanceof Tile) {
+    		Tile t = (Tile)o;
+    		return (this.getX()==t.getX())  && (this.getY()==t.getY());
+    		
+    	}else {
+    		return false;
+    	}
+    	
+    }
+    
 
 }

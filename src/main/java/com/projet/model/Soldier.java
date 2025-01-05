@@ -75,6 +75,9 @@ public class Soldier {
 	public static int getSizeDice() {
 		return sizeDice;
 	}
+	public String getImage() {
+		return "soldier.png";
+	}
 	/**
 	 * setters
 	 */
@@ -302,13 +305,9 @@ public class Soldier {
 	}
 	
 	public String toString() {
-		//TODO is used as alternate text if image not found
-		return "";
+		return new String ("Soldier");
 	}
 	
-	public String getImage() {
-		//TODO is the location of the soldier image
-		return "";
-	}
+	
 	
 }

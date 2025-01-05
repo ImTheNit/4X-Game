@@ -3,7 +3,7 @@ package com.projet.model;
 import java.util.ArrayList;
 
 public class Player {
-    private static Player[] TableauJoueur = new Player[4];
+    private static ArrayList<Player> playerList = new ArrayList<Player>();
 	
 	private String login;
     private int score;
@@ -22,11 +22,15 @@ public class Player {
      * @param cities : cities owned by the player
      */
     public Player(String login, int score, int productionPoints, ArrayList<Soldier> units, ArrayList<City> cities) {
-        this.login = login;
-        this.score = score;
-        this.productionPoints = productionPoints;
-        this.units = units;
-        this.cities = cities;
+        if (playerList.size()<4) {
+        	this.login = login;
+            this.score = score;
+            this.productionPoints = productionPoints;
+            this.units = units;
+            this.cities = cities;
+            addPlayerList(this);
+        }
+    	
     }
     /**
      * @name Constructor with arrays as parameter
@@ -59,6 +63,19 @@ public class Player {
     /*
      *  Getters
      */
+    /**
+	 * @return the playerList
+	 */
+	public static ArrayList<Player> getPlayerList() {
+		return playerList;
+	}
+	public static Player getPlayerList(int index) {
+		if (index < playerList.size()) {
+			return playerList.get(index);
+		}else {
+			return null;
+		}
+	}
     public String getLogin() {
         return login;
     }
@@ -84,6 +101,13 @@ public class Player {
     /*
      *  Setters
      */
+    
+    /**
+	 * @param playerList the playerList to set
+	 */
+	public static void setPlayerList(ArrayList<Player> playerList) {
+		Player.playerList = playerList;
+	}
     public void setLogin(String login) {
         this.login = login;
     }
@@ -96,6 +120,20 @@ public class Player {
         this.productionPoints = productionPoints;
     }
 
+    
+    
+    
+    
+    
+    public void addPlayerList(Player player) {
+    	for (int i = 0; i < playerList.size(); i++) {
+            if (playerList.get(i) == player || i>=4) {
+            	return;
+            }
+        }
+    	playerList.add(player);
+    }
+    
     public void addUnits(Soldier unit) {
     	for (int i = 0; i < units.size(); i++) {
             if (units.get(i) == unit) {
@@ -150,14 +188,41 @@ public class Player {
         }
 	}
 	void removeCity(City city) {
-		for (int i = 0; i < cities.size(); i++) {
-            if (cities.get(i) == city) {
-                this.removeCityByIndex(i);
-            	return;
-            }
-        }
+		if(cities!=null) {
+			for (int i = 0; i < cities.size(); i++) {
+	            if (cities.get(i) == city) {
+	                this.removeCityByIndex(i);
+	            	return;
+	            }
+			}
+		}
 	}
 	
+	@Override
+	public String toString() {
+		String ret;
+		ret = "login :"+login;
+		ret += " score :"+score;
+		ret += " productionPoints :"+productionPoints;
+		ret += " dead :"+dead;
+		return ret;
+	}
+	
+	@Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        System.out.println("test");
+        Player player = (Player) obj;
+        return score == player.score &&
+               productionPoints == player.productionPoints &&
+               dead == player.dead &&
+               login == player.login;
+    }
 	
 	
 	
