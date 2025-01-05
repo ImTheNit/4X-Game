@@ -3,7 +3,7 @@ package com.projet.model;
 import java.util.ArrayList;
 
 public class Player {
-
+    private static Player[] TableauJoueur = new Player[4];
 	
 	private String login;
     private int score;

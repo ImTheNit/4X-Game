@@ -301,4 +301,14 @@ public class Soldier {
 		}
 	}
 	
+	public String toString() {
+		//TODO is used as alternate text if image not found
+		return "";
+	}
+	
+	public String getImage() {
+		//TODO is the location of the soldier image
+		return "";
+	}
+	
 }

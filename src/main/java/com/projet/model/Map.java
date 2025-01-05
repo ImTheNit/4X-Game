@@ -9,7 +9,7 @@ import com.projet.model.Creator.CreatorPlain;
 
 public class Map {
 	private Tile[][] tiles;
-	private static Map map;
+	private static Map map = new Map();
 
     /**
      * @name Constructor without parameters, generate a 10x10 map

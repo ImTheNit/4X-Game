@@ -1,3 +1,5 @@
+<%@page import="com.projet.model.TileType"%>
+<%@page import="org.hibernate.internal.build.AllowSysOut"%>
 <%@page import="com.projet.model.Map"%>
 <%@page import="org.apache.tomcat.util.descriptor.web.SessionConfig"%>
 <%@page import="jakarta.websocket.Session"%>
@@ -7,7 +9,7 @@
 <%
 //Vérification de l'existence de la session
 HttpSession activeSession = request.getSession(false);
-if (activeSession == null || activeSession.getAttribute("user") == null) {
+if (activeSession == null || activeSession.getAttribute("userID") == null) {
     // Redirection vers la page de connexion car la session n'existe pas
     response.sendRedirect("login.jsp");
     return;
@@ -36,7 +38,17 @@ if (activeSession == null || activeSession.getAttribute("user") == null) {
 			<% for(int j=0; j<Map.getMap().YSize(); j++){
 				%><td>
 				<img alt="<%= Map.getMap().getTile(i, j).toString() %>" src="<%= Map.getMap().getTile(i, j).getImage() %>" class=img1>
-				<%//TODO ajouter si il y a un joueur et l'image si l'un des éléments de la case appartient à un joueur (ville ou soldat) %>
+				<%
+				if (Map.getMap().getTile(i, j).getUnit()!=null){
+					%><img alt="<%= Map.getMap().getTile(i, j).getUnit().toString() %>" src="<%= Map.getMap().getTile(i, j).getUnit().getImage() %>" class=img2>
+					<%
+				}else{
+					if(Map.getMap().getTile(i, j).getType()== TileType.CITY){
+						%><img alt="<%= Map.getMap().getTile(i, j).toString() %>" src="<%= Map.getMap().getTile(i, j).getImage() %>" class=img1>
+						<%
+					}
+				}
+				//TODO ajouter si il y a un joueur et l'image si l'un des éléments de la case appartient à un joueur (ville ou soldat) %>
 				</td><%
 			}
 			%></tr><%
