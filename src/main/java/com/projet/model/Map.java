@@ -164,7 +164,7 @@ public class Map {
     		for(int i = 0; i<tiles.length;i++) {
     			ret += "<tr>";
         		for(int j = 0; j<tiles[i].length;j++) {
-        			ret += "<td> <div class=\"image-container\">  ";
+        			ret += "<td> <div class='image-container'>  ";
         			if (tiles[i][j]!=null) {
         				
         				//background
@@ -182,7 +182,7 @@ public class Map {
         				//border
         				
         				//selection
-        				if(tiles[i][j]==selection) {
+        				if( (selection != null) && (tiles[i][j]==selection) ) {
         					ret += "<img src=" + repoImage + "borderSelectedTile.png alt = borderSelectedTile width=100 height=100  class=img3>";
         				
         				//Current Player 

@@ -4,6 +4,8 @@ package com.projet.controller;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.projet.model.Map;
 import com.projet.model.Player;
 
@@ -31,9 +33,26 @@ public class MapController {
 	    	System.out.println(client.isOpen());
 		    if (client.isOpen()) {
 		    	System.out.println(Map.getMap().printJSP(Player.getPlayerList(0), Map.getMap().getTile(0, 0)));
+		    	String html = Map.getMap().printJSP(Player.getPlayerList(0), Map.getMap().getTile(0, 0));
 		    	
+		    	
+		    	String escapedString = html.replace("\"", "\\\"");
+		    	
+		    	ObjectMapper objectMapper = new ObjectMapper();
+		        ObjectNode jsonObject = objectMapper.createObjectNode();
+		    	
+		        jsonObject.put("html", escapedString);
+		        
+		        try {
+		            String jsonString = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonObject);
+		            System.out.println(jsonString);
+		            
+		            client.getAsyncRemote().sendText(jsonString);
+		        } catch (Exception e) {
+		            e.printStackTrace();
+		        }
 		    	//client.getAsyncRemote().sendText(Map.getMap().printJSP(Player.getPlayerList(0), Map.getMap().getTile(0, 0)));
-		    	client.getAsyncRemote().sendText(message);
+		    	//client.getAsyncRemote().sendText(message);
 		    }
 	    }
     }

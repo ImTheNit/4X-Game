@@ -85,13 +85,13 @@ if (activeSession == null || activeSession.getAttribute("user") == null) {
 		const wsMap = new WebSocket('ws://'+window.location.host+"/4X-Game/map");
 		wsMap.onopen = () => {
             console.log('Connexion WebSocket établie');
-            ws.send(JSON.stringify({ type: 'join', pseudonyme: "pseudo" }));// remplacer par login
+            wsMap.send(JSON.stringify({ type: 'join', pseudonyme: "pseudo" }));// remplacer par login
         };
 
         wsMap.onmessage = (event) => {
         	console.log('message recu ' );
             const message = JSON.parse(event.data);
-            console.log("message : "+message);
+            console.log("message : " + message);
             replaceContent(event.data)
         };
 
@@ -117,8 +117,22 @@ if (activeSession == null || activeSession.getAttribute("user") == null) {
         
         
         function replaceContent(newHtml) {
+        	console.log(newHtml);
+        	console.log(typeof newHtml);
+        	const jsonObject = JSON.parse(newHtml);
+        	console.log(typeof jsonObject);
+        	console.log("type :"+newHtml.type);
+        	//const jsonObject = JSON.parse(newHtml);
             const contentDiv = document.getElementById('content');
-            contentDiv.innerHTML = newHtml;
+            if (jsonObject.html){
+            	console.log("True" + jsonObject.html);
+            }else{
+            	console.log("False");
+            }
+            const htmlContent = jsonObject.html;
+            console.log(htmlContent);
+            console.log(newHtml.html);
+            contentDiv.innerHTML = htmlContent;
         }
 		</script>
 		
