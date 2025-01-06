@@ -38,10 +38,10 @@ public class Player {
     }
     private static ArrayList<Player> initialisePlayerList() {
     	ArrayList<Player> liste = new ArrayList<Player>();
-    	Player player = new Player("Joueur1",0,0,new ArrayList<Soldier>(),new ArrayList<City>());
-		Player player2 = new Player("Joueur2",0,0,new ArrayList<Soldier>(),new ArrayList<City>());
-		Player player3 = new Player("Joueur3",0,0,new ArrayList<Soldier>(),new ArrayList<City>());
-		Player player4 = new Player("Joueur4",0,0,new ArrayList<Soldier>(),new ArrayList<City>());
+    	Player player = new Player("",0,0,new ArrayList<Soldier>(),new ArrayList<City>());
+		Player player2 = new Player("",0,0,new ArrayList<Soldier>(),new ArrayList<City>());
+		Player player3 = new Player("",0,0,new ArrayList<Soldier>(),new ArrayList<City>());
+		Player player4 = new Player("",0,0,new ArrayList<Soldier>(),new ArrayList<City>());
 		liste.addAll(Arrays.asList(player, player2, player3, player4));
 		return liste;
 	}
@@ -267,6 +267,15 @@ public class Player {
 		return Player.getPlayerList(Player.getPlayerIndexByLogin(login));
 	}
 	
-	
+	/*
+	 * @return true if the player is already a player in the game
+	 */
+	public static boolean playerAlreadyConnected(String login) {
+		Player joueur = Player.getPlayerByLogin(login);
+		if(joueur == null) {
+			return false;
+		}
+		return true;
+	}
 	
 }
