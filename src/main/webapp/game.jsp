@@ -143,24 +143,8 @@ if (activeSession == null || activeSession.getAttribute("user") == null) {
 		
 		<%
 		
-		Player player = new Player("Joueur1",0,0,new ArrayList<Soldier>(),new ArrayList<City>());
-		Player player2 = new Player("Joueur2",0,0,new ArrayList<Soldier>(),new ArrayList<City>());
-		Player player3 = new Player("Joueur3",0,0,new ArrayList<Soldier>(),new ArrayList<City>());
-		Player player4 = new Player("Joueur4",0,0,new ArrayList<Soldier>(),new ArrayList<City>());
-		Soldier s = new Soldier(9, 9, 0, player, Map.getMap());
-		Tile t = Map.getMap().getTile(0, 0);
-		t.setUnit(s);
-		City c = (City)t;
-		City c2 = (City)Map.getMap().getTile(9, 0);
-		City c3 = (City)Map.getMap().getTile(9, 9);
-		City c4 = (City)Map.getMap().getTile(0, 9);
 		
-		c.newOwner(player);
-		c2.newOwner(player2);
-		c3.newOwner(player3);
-		c4.newOwner(player4);
-		
-		String display = Map.getMap().printJSP(player,Map.getMap().getTile(1, 1)); 
+		String display = Map.getMap().printJSP(Player.getPlayerByLogin(((String)activeSession.getAttribute("user"))),Map.getMap().getTile(1, 1)); 
 		//out.println(display);
 		%>
 

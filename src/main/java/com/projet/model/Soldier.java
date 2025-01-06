@@ -98,7 +98,12 @@ public class Soldier {
 		defence = def;
 	}
 	public void setOwner(Player owner) {
+		if (this.getOwner()!=null) {//case the soldier already have an owner
+			this.getOwner().getUnits().remove(this);
+		}
 		this.owner = owner;
+		this.getOwner().getUnits().add(this);
+		
 	}
 
 	

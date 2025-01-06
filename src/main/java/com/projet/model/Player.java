@@ -1,9 +1,10 @@
 package com.projet.model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Player {
-    private static ArrayList<Player> playerList = new ArrayList<Player>();
+    private static ArrayList<Player> playerList = Player.initialisePlayerList();
     private static int ActivePlayerIndex =0;
 	
 	private String login;
@@ -35,7 +36,17 @@ public class Player {
         }
     	
     }
-    /**
+    private static ArrayList<Player> initialisePlayerList() {
+    	ArrayList<Player> liste = new ArrayList<Player>();
+    	Player player = new Player("",0,0,new ArrayList<Soldier>(),new ArrayList<City>());
+		Player player2 = new Player("",0,0,new ArrayList<Soldier>(),new ArrayList<City>());
+		Player player3 = new Player("",0,0,new ArrayList<Soldier>(),new ArrayList<City>());
+		Player player4 = new Player("",0,0,new ArrayList<Soldier>(),new ArrayList<City>());
+		liste.addAll(Arrays.asList(player, player2, player3, player4));
+		return liste;
+	}
+    
+	/**
      * @name Constructor with arrays as parameter
      * 
      * @param s : array of soldier
@@ -231,8 +242,40 @@ public class Player {
                login == player.login;
     }
 	
+	/*
+	 * @return index du joueur dans l'arraylist de joueurs
+	 * @param login du joueur
+	 * retourne -1 si le login ne correspond pas a un joueur et l'index du joueur dans le tableau sinon
+	 */
+	public static int getPlayerIndexByLogin(String login) {
+		if(!Player.getPlayerList().isEmpty()) {
+			for (int i=0; i<Player.getPlayerList().size();i++) {
+				if(Player.getPlayerList().get(i).getLogin().equals(login)) {
+					return i;
+				}
+			}
+		}
+		return -1;
+	}
 	
+	/*
+	 * @return index du joueur dans l'arraylist de joueurs
+	 * @param login du joueur
+	 * retourne l'entité "Player" correspondant au login
+	 */
+	public static Player getPlayerByLogin(String login) {
+		return Player.getPlayerList(Player.getPlayerIndexByLogin(login));
+	}
 	
-	
+	/*
+	 * @return true if the player is already a player in the game
+	 */
+	public static boolean playerAlreadyConnected(String login) {
+		Player joueur = Player.getPlayerByLogin(login);
+		if(joueur == null) {
+			return false;
+		}
+		return true;
+	}
 	
 }
