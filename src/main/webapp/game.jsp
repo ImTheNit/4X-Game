@@ -148,7 +148,7 @@ if (activeSession == null || activeSession.getAttribute("user") == null) {
         }
 		
 		function moveNorth(){
-			<% s.moveNorth();%>
+			<% Player.getPlayerByLogin(((String)activeSession.getAttribute("user"))).getUnits().get(0).moveNorth();%>
 			alert("deplacement");
 		}
 		
