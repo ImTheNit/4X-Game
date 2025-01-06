@@ -247,7 +247,7 @@ public class Player {
 	 * @param login du joueur
 	 * retourne -1 si le login ne correspond pas a un joueur et l'index du joueur dans le tableau sinon
 	 */
-	public int getPlayerIndexByLogin(String login) {
+	public static int getPlayerIndexByLogin(String login) {
 		if(!Player.getPlayerList().isEmpty()) {
 			for (int i=0; i<Player.getPlayerList().size();i++) {
 				if(Player.getPlayerList().get(i).getLogin().equals(login)) {
@@ -263,8 +263,8 @@ public class Player {
 	 * @param login du joueur
 	 * retourne l'entité "Player" correspondant au login
 	 */
-	public Player getPlayerByLogin(String login) {
-		return Player.getPlayerList(this.getPlayerIndexByLogin(login));
+	public static Player getPlayerByLogin(String login) {
+		return Player.getPlayerList(Player.getPlayerIndexByLogin(login));
 	}
 	
 	

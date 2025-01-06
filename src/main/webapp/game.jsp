@@ -130,7 +130,7 @@ if (activeSession == null || activeSession.getAttribute("user") == null) {
 		<%
 		
 		
-		String display = Map.getMap().printJSP(player,Map.getMap().getTile(1, 1)); 
+		String display = Map.getMap().printJSP(Player.getPlayerByLogin(((String)activeSession.getAttribute("user"))),Map.getMap().getTile(1, 1)); 
 		//out.println(display);
 		%>
 
