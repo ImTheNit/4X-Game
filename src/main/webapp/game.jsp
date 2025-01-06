@@ -14,10 +14,10 @@
 <%
 //Vérification de l'existence de la session
 HttpSession activeSession = request.getSession(false);
-if (activeSession == null || activeSession.getAttribute("userID") == null) {
+if (activeSession == null || activeSession.getAttribute("user") == null) {
     // Redirection vers la page de connexion car la session n'existe pas
-    //response.sendRedirect("login.jsp");
-    //return;
+    response.sendRedirect("login.jsp");
+    return;
 }
 %>
 <html>
@@ -149,6 +149,7 @@ if (activeSession == null || activeSession.getAttribute("userID") == null) {
 		String display = Map.getMap().printJSP(player,Map.getMap().getTile(1, 1)); 
 		//out.println(display);
 		%>
+
 		</table></div>
 		
 		<div class="box buttons">
@@ -171,5 +172,9 @@ if (activeSession == null || activeSession.getAttribute("userID") == null) {
 		<button class="button" onclick="moveNorth()">Move To North</button>
 		<button class="button" onclick="sendMessage()">Move To West</button>
 		</div>
+
+		
+		
+
 </body>
 </html>
