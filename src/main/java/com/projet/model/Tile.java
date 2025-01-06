@@ -144,7 +144,7 @@ public abstract class Tile {
     		System.out.println("Owner found");
     		return getUnit().getOwner();
     	}
-    	System.out.println("unit :"+getUnit());
+    	//System.out.println("unit :"+getUnit());
     	return new Player();
     }
     

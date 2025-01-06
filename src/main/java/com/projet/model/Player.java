@@ -29,6 +29,8 @@ public class Player {
             this.units = units;
             this.cities = cities;
             addPlayerList(this);
+        }else {
+        	
         }
     	
     }
@@ -145,6 +147,9 @@ public class Player {
     
 
     public void addCities(City city) {
+    	if (cities==null) {
+    		cities = new ArrayList<City>();
+    	}
     	for (int i = 0; i < cities.size(); i++) {
             if (cities.get(i) == city) {
             	return;
@@ -210,13 +215,14 @@ public class Player {
 	
 	@Override
     public boolean equals(Object obj) {
+		//System.out.println(obj);
         if (this == obj) {
             return true;
         }
         if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
-        System.out.println("test");
+        //System.out.println("test2");
         Player player = (Player) obj;
         return score == player.score &&
                productionPoints == player.productionPoints &&
