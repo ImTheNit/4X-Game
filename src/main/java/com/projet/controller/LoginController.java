@@ -22,7 +22,7 @@ public class LoginController extends HttpServlet{
             // Création de la session
             HttpSession session = request.getSession();
             session.setAttribute("user", username);
-            response.sendRedirect("index.jsp");
+            response.sendRedirect("game.jsp");
         } else {
             // Redirection vers la page de connexion avec un message d'erreur
             response.sendRedirect("login.jsp?error=true");

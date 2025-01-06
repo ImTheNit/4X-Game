@@ -14,10 +14,10 @@
 <%
 //Vérification de l'existence de la session
 HttpSession activeSession = request.getSession(false);
-if (activeSession == null || activeSession.getAttribute("userID") == null) {
+if (activeSession == null || activeSession.getAttribute("user") == null) {
     // Redirection vers la page de connexion car la session n'existe pas
-    //response.sendRedirect("login.jsp");
-    //return;
+    response.sendRedirect("login.jsp");
+    return;
 }
 %>
 <html>
@@ -72,5 +72,6 @@ if (activeSession == null || activeSession.getAttribute("userID") == null) {
 		out.println(display);
 		%>
 		</table>
+		
 </body>
 </html>
