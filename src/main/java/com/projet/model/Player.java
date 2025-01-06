@@ -1,9 +1,10 @@
 package com.projet.model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Player {
-    private static ArrayList<Player> playerList = new ArrayList<Player>();
+    private static ArrayList<Player> playerList = Player.initialisePlayerList();
     private static int ActivePlayerIndex =0;
 	
 	private String login;
@@ -35,7 +36,17 @@ public class Player {
         }
     	
     }
-    /**
+    private static ArrayList<Player> initialisePlayerList() {
+    	ArrayList<Player> liste = new ArrayList<Player>();
+    	Player player = new Player("Joueur1",0,0,new ArrayList<Soldier>(),new ArrayList<City>());
+		Player player2 = new Player("Joueur2",0,0,new ArrayList<Soldier>(),new ArrayList<City>());
+		Player player3 = new Player("Joueur3",0,0,new ArrayList<Soldier>(),new ArrayList<City>());
+		Player player4 = new Player("Joueur4",0,0,new ArrayList<Soldier>(),new ArrayList<City>());
+		liste.addAll(Arrays.asList(player, player2, player3, player4));
+		return liste;
+	}
+    
+	/**
      * @name Constructor with arrays as parameter
      * 
      * @param s : array of soldier

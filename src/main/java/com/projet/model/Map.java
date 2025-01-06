@@ -9,7 +9,7 @@ import com.projet.model.Creator.CreatorPlain;
 
 public class Map {
 	private Tile[][] tiles;
-	private static Map map = new Map();
+	private static Map map = Map.initialiseMap();
 
     /**
      * @name Constructor without parameters, generate a 10x10 map
@@ -20,7 +20,30 @@ public class Map {
         this(10,10);
         
     }
-    /**
+    private static Map initialiseMap() {
+		Map carte = new Map();
+		Soldier s = new Soldier(9, 9, 0, Player.getPlayerList(0), Map.getMap());
+		Soldier s2 = new Soldier(9, 9, 0, Player.getPlayerList(1), Map.getMap());
+		Soldier s3 = new Soldier(9, 9, 0, Player.getPlayerList(2), Map.getMap());
+		Soldier s4 = new Soldier(9, 9, 0, Player.getPlayerList(3), Map.getMap());
+		
+		City c = (City)Map.getMap().getTile(0, 0);;
+		City c2 = (City)Map.getMap().getTile(9, 0);
+		City c3 = (City)Map.getMap().getTile(9, 9);
+		City c4 = (City)Map.getMap().getTile(0, 9);
+		
+		c.setUnit(s);
+		c2.setUnit(s2);
+		c3.setUnit(s3);
+		c4.setUnit(s4);
+		
+		c.newOwner(Player.getPlayerList(0));
+		c2.newOwner(Player.getPlayerList(1));
+		c3.newOwner(Player.getPlayerList(2));
+		c4.newOwner(Player.getPlayerList(3));
+		return carte;
+	}
+	/**
      * @name Constructor with size of the map in parameter (square)
      * @param X
      */
