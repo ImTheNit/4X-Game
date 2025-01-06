@@ -84,11 +84,12 @@ public class Player {
 		return playerList;
 	}
 	public static Player getPlayerList(int index) {
-		if (index < playerList.size()) {
-			return playerList.get(index);
-		}else {
-			return null;
+		if(!Player.getPlayerList().isEmpty()) {
+			if (index < playerList.size()) {
+				return playerList.get(index);
+			}
 		}
+		return null;
 	}
     public String getLogin() {
         return login;
