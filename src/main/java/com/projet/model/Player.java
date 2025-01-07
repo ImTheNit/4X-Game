@@ -89,8 +89,8 @@ public class Player {
 	}
 	public static Player getPlayerList(int index) {
 		if(!Player.getPlayerList().isEmpty()) {
-			if (index>=0 && index < playerList.size()) {
-				return playerList.get(index);
+			if (index>=0 && index < getPlayerList().size()) {
+				return getPlayerList().get(index);
 			}
 		}
 		return null;

@@ -20,7 +20,8 @@ public class LoginController extends HttpServlet{
         String password = request.getParameter("password");
 
         //TODO changer verification pour la bdd
-        if ("admin".equals(username) && "password".equals(password)) {
+        if (("admin".equals(username) && "password".equals(password))
+        		|| ("admin2".equals(username) && "password".equals(password))) {
             // Création de la session
             HttpSession session = request.getSession();
             session.setAttribute("user", username);
@@ -30,6 +31,7 @@ public class LoginController extends HttpServlet{
             		Player.getPlayerList(x).setLogin(username);
             	}
             }
+            
             response.sendRedirect("game.jsp");
         } else {
             // Redirection vers la page de connexion avec un message d'erreur
