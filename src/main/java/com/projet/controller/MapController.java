@@ -6,6 +6,8 @@ import java.util.concurrent.CopyOnWriteArraySet;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.projet.model.Map;
 import com.projet.model.Player;
 
@@ -29,12 +31,17 @@ public class MapController {
     public void onMessage(String message, Session session) {
 	    System.out.println("Message reçu de " + message);
 	    for (Session client : clients) {
-	    	System.out.println(client);
-	    	System.out.println(client.isOpen());
 		    if (client.isOpen()) {
 		    	System.out.println(Map.getMap().printJSP(Player.getPlayerList(0), Map.getMap().getTile(0, 0)));
-		    	String html = Map.getMap().printJSP(Player.getPlayerList(0), Map.getMap().getTile(0, 0));
 		    	
+		    	JsonObject jsonObjectMessage = JsonParser.parseString(message).getAsJsonObject();
+		    	
+		    	
+		    	String player = jsonObjectMessage.get("session").getAsString();
+		    	System.out.println(player);
+		    	Player p = Player.getPlayerByLogin(player);
+		    	String html = Map.getMap().printJSP(p, Map.getMap().getTile(0, 0));
+		    	System.out.println(p);
 		    	
 		    	String escapedString = html.replace("\"", "\\\"");
 		    	

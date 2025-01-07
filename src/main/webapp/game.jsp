@@ -76,7 +76,7 @@ if (activeSession == null || activeSession.getAttribute("user") == null) {
 </head>
 <body>
 	<h1>Welcome, <%= session.getAttribute("user") %> to the game</h1>
-		<p>The current time is : <%= new java.util.Date() %> </p>
+		<p>The current time is  <%= new java.util.Date() %> </p>
 		<h2>carte : </h2>
 		<div class="Container">
 		<div class="box map">
@@ -85,7 +85,7 @@ if (activeSession == null || activeSession.getAttribute("user") == null) {
 		const wsMap = new WebSocket('ws://'+window.location.host+"/4X-Game/map");
 		wsMap.onopen = () => {
             console.log('Connexion WebSocket établie');
-            wsMap.send(JSON.stringify({ type: 'join', pseudonyme: "pseudo" }));// remplacer par login
+            wsMap.send(JSON.stringify({ type: 'join', pseudonyme: "pseudo",session: "<%= session.getAttribute("user")%>" }));// remplacer par login
         };
 
         wsMap.onmessage = (event) => {
@@ -107,7 +107,8 @@ if (activeSession == null || activeSession.getAttribute("user") == null) {
                 const message = {
                     type: 'message',
                     pseudonyme: "pseudo",
-                    text: "texte"
+                    text: "texte",
+                    session: "<%= session.getAttribute("user")%>"
                 };
                 wsMap.send(JSON.stringify(message));
                 //messageInput.value = '';
