@@ -7,6 +7,7 @@
 </head>
 <body>
     <h1>Connexion</h1>
+    <%//TODO affichage du message d'erreur %>
     <form action="login" method="post">
         <label for="username">Nom d'utilisateur:</label>
         <input type="text" id="username" name="username" required><br><br>
