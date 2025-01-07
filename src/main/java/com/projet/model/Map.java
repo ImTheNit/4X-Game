@@ -9,7 +9,7 @@ import com.projet.model.Creator.CreatorPlain;
 
 public class Map {
 	private Tile[][] tiles;
-	private static Map map = Map.initialiseMap();
+	private static Map map;
 
     /**
      * @name Constructor without parameters, generate a 10x10 map
@@ -22,15 +22,16 @@ public class Map {
     }
     private static Map initialiseMap() {
 		Map carte = new Map();
+
 		Soldier s = new Soldier(0, 0, 10, Player.getPlayerList(0), carte);
 		Soldier s2 = new Soldier(9, 0, 10, Player.getPlayerList(1), carte);
 		Soldier s3 = new Soldier(9, 9, 10, Player.getPlayerList(2), carte);
 		Soldier s4 = new Soldier(0, 9, 10, Player.getPlayerList(3), carte);
-		
-		City c = (City)Map.getMap().getTile(0, 0);;
-		City c2 = (City)Map.getMap().getTile(9, 0);
-		City c3 = (City)Map.getMap().getTile(9, 9);
-		City c4 = (City)Map.getMap().getTile(0, 9);
+
+		City c = (City)carte.getTile(0, 0);;
+		City c2 = (City)carte.getTile(9, 0);
+		City c3 = (City)carte.getTile(9, 9);
+		City c4 = (City)carte.getTile(0, 9);
 		
 		c.setUnit(s);
 		c2.setUnit(s2);
@@ -142,8 +143,10 @@ public class Map {
 	 * @return the map
 	 */
 	public static Map getMap() {
+
 		if (map==null) {
 			map = new Map();
+			Map.initialiseMap();
 		}
 		return map;
 	}
