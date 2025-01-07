@@ -32,7 +32,7 @@ public class Soldier {
 		setMaxDefence(def);
 		setOwner(owner);
 		setMap(map);
-		map.getTile(X, Y).addUnit(this);
+		Map.getMap().getTile(X, Y).addUnit(this);
 	}
 	/**
 	 * @name Constructor with position as parameters
@@ -102,7 +102,8 @@ public class Soldier {
 			this.getOwner().getUnits().remove(this);
 		}
 		this.owner = owner;
-		this.getOwner().getUnits().add(this);
+		
+		this.getOwner().addUnits(this);
 		
 	}
 

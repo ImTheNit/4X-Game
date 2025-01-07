@@ -22,10 +22,10 @@ public class Map {
     }
     private static Map initialiseMap() {
 		Map carte = new Map();
-		Soldier s = new Soldier(9, 9, 0, Player.getPlayerList(0), Map.getMap());
-		Soldier s2 = new Soldier(9, 9, 0, Player.getPlayerList(1), Map.getMap());
-		Soldier s3 = new Soldier(9, 9, 0, Player.getPlayerList(2), Map.getMap());
-		Soldier s4 = new Soldier(9, 9, 0, Player.getPlayerList(3), Map.getMap());
+		Soldier s = new Soldier(0, 0, 10, Player.getPlayerList(0), carte);
+		Soldier s2 = new Soldier(9, 0, 10, Player.getPlayerList(1), carte);
+		Soldier s3 = new Soldier(9, 9, 10, Player.getPlayerList(2), carte);
+		Soldier s4 = new Soldier(0, 9, 10, Player.getPlayerList(3), carte);
 		
 		City c = (City)Map.getMap().getTile(0, 0);;
 		City c2 = (City)Map.getMap().getTile(9, 0);
@@ -142,6 +142,9 @@ public class Map {
 	 * @return the map
 	 */
 	public static Map getMap() {
+		if (map==null) {
+			map = new Map();
+		}
 		return map;
 	}
 	

@@ -154,6 +154,9 @@ public class Player {
     }
     
     public void addUnits(Soldier unit) {
+    	if (units==null) {
+    		units = new ArrayList<Soldier>();
+    	}
     	for (int i = 0; i < units.size(); i++) {
             if (units.get(i) == unit) {
             	return;
