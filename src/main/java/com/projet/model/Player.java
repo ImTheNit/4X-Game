@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Player {
-    private static ArrayList<Player> playerList = Player.initialisePlayerList();
+    private static ArrayList<Player> playerList;
     private static int ActivePlayerIndex =0;
 	
 	private String login;
@@ -24,7 +24,7 @@ public class Player {
      * @param cities : cities owned by the player
      */
     public Player(String login, int score, int productionPoints, ArrayList<Soldier> units, ArrayList<City> cities) {
-        if (playerList.size()<4) {
+        if (Player.getPlayerList().size()<4) {
         	this.login = login;
             this.score = score;
             this.productionPoints = productionPoints;
@@ -81,11 +81,15 @@ public class Player {
 	 * @return the playerList
 	 */
 	public static ArrayList<Player> getPlayerList() {
+		if(playerList == null) {
+			playerList= new ArrayList<Player>();
+			playerList = Player.initialisePlayerList();
+		}
 		return playerList;
 	}
 	public static Player getPlayerList(int index) {
 		if(!Player.getPlayerList().isEmpty()) {
-			if (index < playerList.size()) {
+			if (index>=0 && index < playerList.size()) {
 				return playerList.get(index);
 			}
 		}
