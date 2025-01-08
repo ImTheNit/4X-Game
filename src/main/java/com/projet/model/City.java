@@ -101,12 +101,17 @@ public class City extends Tile{
     	if (owner!=null) {
     		owner.removeCity(this);
     	}
+    	
+
     	//add city to new owner
     	player.addCities(this);
     	//add new player as owner of the city
     	this.setOwner(player);
     	//restore the defensePoint of the city
     	this.restoreDefensePoint();
+    	//refresh map
+    	MapGame.refreshTile(getX(), getY(), this);
+
     	
     }
     private void restoreDefensePoint() {
@@ -122,5 +127,14 @@ public class City extends Tile{
     	}
     }
 
-
+    @Override
+	public String toString() {
+		String ret = super.toString();
+		ret += "defensePoints :"+defensePoints;
+		ret += " maxDefensePoints :"+maxDefensePoints;
+		ret += " productionRessources :"+productionRessources;
+		ret += " owner :"+owner;
+		return ret;
+	}
+   
 }

@@ -5,7 +5,7 @@
 <%@page import="com.projet.model.Tile"%>
 <%@page import="com.projet.model.City"%>
 <%@page import="org.hibernate.internal.build.AllowSysOut"%>
-<%@page import="com.projet.model.Map"%>
+<%@page import="com.projet.model.MapGame"%>
 <%@page import="org.apache.tomcat.util.descriptor.web.SessionConfig"%>
 <%@page import="jakarta.websocket.Session"%>
 <%@page language="java" contentType="text/html; charset=UTF-8"
@@ -24,60 +24,37 @@ if (activeSession == null || activeSession.getAttribute("user") == null) {
 <head>
 <meta charset="UTF-8">
 <title>4X-Game</title>
-<style>
-.image-container {
-	    position: relative;
-	    width:  100px;
-	    height : 100px; 
-	    background-color: yellow;
-	}
-.image-container img {
-	    position: absolute;
-	    top : 0;
-	    left : 0;
-	    width: 100%;
-	    height: 100%;
+<link rel="stylesheet" href="StyleGame.css">
 
-	}
-.container {
-	display: flex;
-}        
-
-.map {
-	/*flex :1;*/
-	width: 1100px;
-    background-color: lightblue;
-}
-.buttons {
-	width: 100px;
-    background-color: lightgreen;
-}
-.button {
-    background-color: #4CAF50; /* Vert */
-    border: none;
-    color: white;
-    padding: 15px 32px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin: 4px 2px;
-    cursor: pointer;
-    border-radius: 12px; /* Coins arrondis */
-    transition: background-color 0.3s ease; /* Transition douce */
-}
-
-.button:hover {
-    background-color: #45a049; /* Couleur au survol */
-}
-
-	
-</style>
 </head>
 <body>
-	<h1>Welcome, <%= session.getAttribute("user") %> to the game</h1>
-		<p>The current time is  <%= new java.util.Date() %> </p>
+	<h1>Welcome, <%=session.getAttribute("user")%> to the game</h1>
+		<p>The current time is  <%=new java.util.Date()%> </p>
 		<h2>carte : </h2>
+		<div class="stats-container">
+		<div class="stat">
+            <h2>Combats Gagnés</h2>
+            <p id="battles-won"></p>
+        </div>
+        <div class="stat">
+            <h2>Nombre de Villes</h2>
+            <p id="cities"></p>
+        </div>
+        <div class="stat">
+            <h2>Nombre de Soldats</h2>
+            <p id="soldiers"></p>
+        </div>
+        <div class="stat">
+            <h2>Points de ressources</h2>
+            <p id="ressources"></p>
+        </div>
+        <div class="stat">
+            <h2>Score</h2>
+            <p id="score"></p>
+        </div>
+        
+    </div>
+		
 		<div class="Container">
 		<div class="box map">
 		
@@ -85,7 +62,7 @@ if (activeSession == null || activeSession.getAttribute("user") == null) {
 		const wsMap = new WebSocket('ws://'+window.location.host+"/4X-Game/map");
 		wsMap.onopen = () => {
             console.log('Connexion WebSocket établie');
-            wsMap.send(JSON.stringify({ type: 'join', pseudonyme: "pseudo",session: "<%= session.getAttribute("user")%>" }));// remplacer par login
+            wsMap.send(JSON.stringify({ type: 'join', pseudonyme: "pseudo",session: "<%=session.getAttribute("user")%>" }));// remplacer par login
         };
 
         wsMap.onmessage = (event) => {
@@ -108,62 +85,85 @@ if (activeSession == null || activeSession.getAttribute("user") == null) {
                     type: 'message',
                     pseudonyme: "pseudo",
                     text: "texte",
-                    session: "<%= session.getAttribute("user")%>"
+                    session: "<%=session.getAttribute("user")%>"
                 };
                 wsMap.send(JSON.stringify(message));
                 //messageInput.value = '';
             }
         }
         
-        
-        
         function replaceContent(newHtml) {
-        	console.log(newHtml);
-        	console.log(typeof newHtml);
         	const jsonObject = JSON.parse(newHtml);
-        	console.log(typeof jsonObject);
-        	console.log("type :"+newHtml.type);
-        	//const jsonObject = JSON.parse(newHtml);
-            const contentDiv = document.getElementById('content');
-            if (jsonObject.html){
-            	console.log("True" + jsonObject.html);
-            }else{
-            	console.log("False");
-            }
             const htmlContent = jsonObject.html;
-            console.log(htmlContent);
-            console.log(newHtml.html);
-            contentDiv.innerHTML = htmlContent;
+			const battlesWonContent = jsonObject.battlesWon
+			const soldiersContent = jsonObject.soldiers
+			const citiesContent = jsonObject.cities
+			const scoreContent = jsonObject.score
+			const ressourcesContent = jsonObject.ressources
+
+			
+        	replaceContentMap(htmlContent);
+			replaceContentBattleWon(battlesWonContent);
+        	replaceContentSoldiers(soldiersContent);
+        	replaceContentCities(citiesContent);
+        	replaceContentScore(scoreContent);
+        	replaceContentRessources(ressourcesContent);
         }
+        
+        function replaceContentMap(NewContent) {
+            const contentDiv = document.getElementById('map');
+            contentDiv.innerHTML = NewContent;
+            
+        }
+        function replaceContentBattleWon(battlesWon) {
+            const contentDiv = document.getElementById('battles-won');
+            contentDiv.innerHTML = battlesWon;
+        }
+        function replaceContentSoldiers(Soldiers) {
+            const contentDiv = document.getElementById('soldiers');
+            contentDiv.innerHTML = Soldiers;
+        }
+        function replaceContentCities(cities) {
+            const contentDiv = document.getElementById('cities');
+            contentDiv.innerHTML = cities;
+        }
+        function replaceContentScore(score) {
+            const contentDiv = document.getElementById('score');
+            contentDiv.innerHTML = score;
+        }
+        function replaceContentRessources(ressources) {
+            const contentDiv = document.getElementById('ressources');
+            contentDiv.innerHTML = ressources;
+        }
+        
 		</script>
 		
-		<table id='content'>
+		<table id='map'>
 		
 		
 		
 		
-		<%
-		
-		Player player = new Player("Joueur1",0,0,new ArrayList<Soldier>(),new ArrayList<City>());
-		Player player2 = new Player("Joueur2",0,0,new ArrayList<Soldier>(),new ArrayList<City>());
-		Player player3 = new Player("Joueur3",0,0,new ArrayList<Soldier>(),new ArrayList<City>());
-		
-		Soldier s = new Soldier(9, 9, 0, player, Map.getMap());
-		Tile t = Map.getMap().getTile(0, 0);
-		t.setUnit(s);
-		City c = (City)t;
-		City c2 = (City)Map.getMap().getTile(9, 0);
-		City c3 = (City)Map.getMap().getTile(9, 9);
-		
-		
-		c.newOwner(player);
-		c2.newOwner(player2);
-		c3.newOwner(player3);
-		
-		
-		String display = Map.getMap().printJSP(player,Map.getMap().getTile(1, 1)); 
-		//out.println(display);
-		%>
+		<% /*
+										Player player = new Player("Joueur1",0,0,new ArrayList<Soldier>(),new ArrayList<City>());
+												Player player2 = new Player("Joueur2",0,0,new ArrayList<Soldier>(),new ArrayList<City>());
+												Player player3 = new Player("Joueur3",0,0,new ArrayList<Soldier>(),new ArrayList<City>());
+												
+												Soldier s = new Soldier(9, 9, 0, player, MapGame.getMap());
+												Tile t = MapGame.getMap().getTile(0, 0);
+												t.setUnit(s);
+												City c = (City)t;
+												City c2 = (City)MapGame.getMap().getTile(9, 0);
+												City c3 = (City)MapGame.getMap().getTile(9, 9);
+												
+												
+												c.newOwner(player);
+												c2.newOwner(player2);
+												c3.newOwner(player3);
+												
+												
+												String display = MapGame.getMap().printJSP(player,MapGame.getMap().getTile(1, 1)); 
+												//out.println(display);*/
+										%>
 
 		</table></div>
 		
@@ -179,13 +179,32 @@ if (activeSession == null || activeSession.getAttribute("user") == null) {
         }
 		
 		function moveNorth(){
-			<% Player.getPlayerByLogin(((String)activeSession.getAttribute("user"))).getUnits().get(0).moveNorth();%>
+			<% //Player.getPlayerByLogin(((String)activeSession.getAttribute("user"))).getUnits().get(0).moveNorth(); %>
 			alert("deplacement");
+			alert("<% //Player.getPlayerByLogin(((String)activeSession.getAttribute("user"))).getUnits().get(0) %>");
+			sendMessage();
 		}
-		
+		function moveSouth(){
+			
+			alert("<%=Player.getPlayerByLogin(((String)activeSession.getAttribute("user"))).getUnits().size()   %>");
+			<%
+			System.out.println("Taille de la liste des unités : " + Player.getPlayerByLogin(((String)activeSession.getAttribute("user"))).getUnits().size());
+			if (Player.getPlayerByLogin(((String)activeSession.getAttribute("user"))).getUnits().size()>0){
+				Player.getPlayerByLogin(((String)activeSession.getAttribute("user"))).getUnits().get(0).moveSouth();
+			}
+			//Soldier s = new Soldier(4, 4, 7, Player.getPlayerByLogin(((String)activeSession.getAttribute("user"))), MapGame.getMap());
+			//Soldier s1 = new Soldier(5, 5, 7, Player.getPlayerByLogin(((String)activeSession.getAttribute("user"))), MapGame.getMap());
+			%>
+			alert("deplacement au sud");
+			alert("<%=Player.getPlayerByLogin(((String)activeSession.getAttribute("user"))).getUnits().size()   %>");
+			sendMessage();
+			alert("Fin de fonction<%=((String)activeSession.getAttribute("user"))%>");
+		}
 		</script>
 		<button class="button" onclick="moveNorth()">Move To North</button>
-		<button class="button" onclick="sendMessage()">Move To West</button>
+		<button class="button" onclick="moveWest()">Move To West</button>
+		<button class="button" onclick="moveSouth()">Move To South</button>
+		<button class="button" onclick="sendMessage()">Move To East</button>
 		</div>
 
 		

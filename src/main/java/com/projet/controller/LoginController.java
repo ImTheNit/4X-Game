@@ -21,16 +21,17 @@ public class LoginController extends HttpServlet{
 
         //TODO changer verification pour la bdd
         if (("admin".equals(username) && "password".equals(password))
-        		|| ("admin2".equals(username) && "password".equals(password))) {
+        		|| ("admin2".equals(username) && "password".equals(password))
+        		|| ("admin3".equals(username) && "password".equals(password))
+        		|| ("admin4".equals(username) && "password".equals(password))
+        		) {
             // Création de la session
             HttpSession session = request.getSession();
             session.setAttribute("user", username);
             if(!Player.playerAlreadyConnected(username)) {
-            	int x = Player.getPlayerIndexByLogin("");
-            	if(x>=0) {//il y a un joueur non affecté
-            		Player.getPlayerList(x).setLogin(username);
+            	Player.initPlayerFromLogin(username);
+            	System.out.println("Joueur initialis�");
             	}
-            }
             
             response.sendRedirect("game.jsp");
         } else {

@@ -2,7 +2,7 @@ package com.projet.main;
 
 import java.sql.SQLException;
 
-import com.projet.model.Map;
+import com.projet.model.MapGame;
 import com.projet.model.Player;
 import com.projet.model.Soldier;
 import com.ressources.sql.SQL;
@@ -10,11 +10,11 @@ import com.ressources.sql.SQL;
 public class App {
 
 	public static void main(String[] args) throws SQLException {
-		Map m = new Map();
-		System.out.println(m.toString());
+		
+		//System.out.println(m.toString());
 		
 		Player player = new Player();
-		Soldier s = new Soldier(9, 9, 0, player, m);
+		Soldier s = new Soldier(9, 9, 0, player);
 
 		
 		

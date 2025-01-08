@@ -7,26 +7,26 @@ import com.projet.model.Creator.CreatorForest;
 import com.projet.model.Creator.CreatorMountain;
 import com.projet.model.Creator.CreatorPlain;
 
-public class Map {
+public class MapGame {
 	private Tile[][] tiles;
-	private static Map map;
+	private static MapGame map;
 
     /**
      * @name Constructor without parameters, generate a 10x10 map
      * 
      * 
      */
-    public Map() {
+    public MapGame() {
         this(10,10);
         
     }
-    private static Map initialiseMap() {
-		Map carte = new Map();
+    private static MapGame initialiseMap() {
+		MapGame carte = new MapGame();
 
-		Soldier s = new Soldier(0, 0, 10, Player.getPlayerList(0), carte);
-		Soldier s2 = new Soldier(9, 0, 10, Player.getPlayerList(1), carte);
-		Soldier s3 = new Soldier(9, 9, 10, Player.getPlayerList(2), carte);
-		Soldier s4 = new Soldier(0, 9, 10, Player.getPlayerList(3), carte);
+		Soldier s = new Soldier(0, 0, 10, Player.getPlayerList(0));
+		Soldier s2 = new Soldier(9, 0, 10, Player.getPlayerList(1));
+		Soldier s3 = new Soldier(9, 9, 10, Player.getPlayerList(2));
+		Soldier s4 = new Soldier(0, 9, 10, Player.getPlayerList(3));
 
 		City c = (City)carte.getTile(0, 0);;
 		City c2 = (City)carte.getTile(9, 0);
@@ -48,7 +48,7 @@ public class Map {
      * @name Constructor with size of the map in parameter (square)
      * @param X
      */
-    public Map(int X) {
+    public MapGame(int X) {
         this(X,X);
         
     }
@@ -57,7 +57,7 @@ public class Map {
      * @param X : X size of the map
      * @param Y : Y size of the map
      */
-    public Map(int X,int Y) {
+    public MapGame(int X,int Y) {
         tiles = new Tile[X][Y];
         initialiseTiles();        
     }
@@ -142,11 +142,11 @@ public class Map {
     /**
 	 * @return the map
 	 */
-	public static Map getMap() {
+	public static MapGame getMap() {
 
 		if (map==null) {
-			map = new Map();
-			Map.initialiseMap();
+			map = new MapGame();
+			MapGame.initialiseMap();
 		}
 		return map;
 	}
@@ -154,8 +154,8 @@ public class Map {
 	/**
 	 * @param map the map to set
 	 */
-	public static void setMap(Map map) {
-		Map.map = map;
+	public static void setMap(MapGame map) {
+		MapGame.map = map;
 	}
 	
 	public String toString() {
@@ -186,63 +186,72 @@ public class Map {
     // TODO
     public String printJSP(Player player, Tile selection) {
     	String repoImage = new String("ressources/images/");
-    	if(tiles==null) {
+    	Tile[][] tile = getMap().getTiles();
+    	
+    	if(tile==null) {
     		return null;
     	}else {
     		String ret = "";
-    		for(int i = 0; i<tiles.length;i++) {
+    		for(int i = 0; i<tile.length;i++) {
     			ret += "<tr>";
-        		for(int j = 0; j<tiles[i].length;j++) {
+        		for(int j = 0; j<tile[i].length;j++) {
         			ret += "<td> <div class='image-container'>  ";
-        			if (tiles[i][j]!=null) {
+        			if (tile[i][j]!=null) {
         				
         				//background
         				ret += "<img src=" + repoImage + "plain.png alt = background/Plain width=100 height=100  class=img1>";
         				
         				//image of the Tile
-        				ret += "<img src=" + repoImage + tiles[i][j].getImage() +" alt = " + tiles[i][j].toString() + " width=100 height=100  class=img1>";
+        				ret += "<img src=" + repoImage + tile[i][j].getImage() +" alt = " + tile[i][j].toString() + " width=100 height=100  class=img1>";
         				
         				//Soldier
-        				if (tiles[i][j].getUnit()!= null) {
+        				if (tile[i][j].getUnit()!= null) {
         					//ret += tiles[i][j].getUnit().getImage(); //convertir en html pour incruster l'image
-        					ret += " <img src=" + repoImage + tiles[i][j].getUnit().getImage() +" alt = " + tiles[i][j].getUnit().toString() + " width=100 height=100  class=img2>";
+        					ret += " <img src=" + repoImage + tile[i][j].getUnit().getImage() +" alt = " + tile[i][j].getUnit().toString() + " width=100 height=100  class=img2>";
         				}
         				
         				//border
+        				Player p = tile[i][j].getOwnerTile();
         				
         				//selection
-        				if( (selection != null) && (tiles[i][j]==selection) ) {
+        				if( (selection != null) && (tile[i][j]==selection) ) {
         					ret += "<img src=" + repoImage + "borderSelectedTile.png alt = borderSelectedTile width=100 height=100  class=img3>";
-        				
+        					
+        					
         				//Current Player 
-        				}else if(tiles[i][j].getOwnerTile().equals(player)){
+        				}else if(p.equals(player)){
         					ret += "<img src=" + repoImage + "borderActivePlayer.png alt = borderActivePlayer width=100 height=100  class=img3>";
-        				
+        					
         					//player 0
-        				}else if (tiles[i][j].getOwnerTile().equals(Player.getPlayerList(0))){
+        				}else if (p.equals(Player.getPlayerList(0))){
             				ret += "<img src=" + repoImage + "borderPlayer0.png alt = borderPlayer0 width=100 height=100  class=img3>";
             				
         					
         					//Player 1
-        				}else if (tiles[i][j].getOwnerTile().equals(Player.getPlayerList(1))){
+        				}else if (p.equals(Player.getPlayerList(1))){
         					ret += "<img src=" + repoImage + "borderPlayer1.png alt = borderPlayer1 width=100 height=100  class=img3>";
         					
+        					
         					//Player 2
-        				}else if (tiles[i][j].getOwnerTile().equals(Player.getPlayerList(2))){
+        				}else if (p.equals(Player.getPlayerList(2))){
         					ret += "<img src=" + repoImage + "borderPlayer2.png alt = borderPlayer2 width=100 height=100  class=img3>";
         					
+        					
         					//Player 3
-        				}else if (tiles[i][j].getOwnerTile().equals(Player.getPlayerList(3))){
+        				}else if (p.equals(Player.getPlayerList(3))){
         					ret += "<img src=" + repoImage + "borderPlayer3.png alt = borderPlayer3 width=100 height=100  class=img3>";	
+        					
         				}
-        				
+        				//System.out.println("["+i+"]["+j+" : "+tiles[i][j].getOwnerTile());
         				
         			}else {
+        				
         				ret += "NONE";
         			}
         			ret += "</div></td>";
         		}
         	}
+    		//System.out.println(Player.getPlayerList());
     		return ret;
     	}
     }
@@ -259,5 +268,12 @@ public class Map {
      */
     public int YSize() {
     	return this.getTiles()[0].length;
+    }
+    
+    
+    public static void refreshTile(int x, int y,Tile tile) {
+    	if (tile!= null) {
+    		MapGame.getMap().setTile(x, y, tile);
+    	}
     }
 }

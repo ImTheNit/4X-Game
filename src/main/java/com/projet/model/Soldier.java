@@ -10,7 +10,6 @@ public class Soldier {
 	 */
 	private int X;
 	private int Y;
-	private Map map;
 	private int maxDefence = 10;
 	private int defence =10;
 	private Player owner;
@@ -25,14 +24,13 @@ public class Soldier {
 	 * @param def : defence of the soldier
 	 * @param owner : owner of the soldier
 	 */
-	public Soldier(int x, int y, int def,Player owner, Map map) {
+	public Soldier(int x, int y, int def,Player owner) {
 		setPositionX(x);
 		setPositionY(y);
 		setDefence(def);
 		setMaxDefence(def);
 		setOwner(owner);
-		setMap(map);
-		Map.getMap().getTile(X, Y).addUnit(this);
+		MapGame.getMap().getTile(X, Y).addUnit(this);
 	}
 	/**
 	 * @name Constructor with position as parameters
@@ -41,12 +39,11 @@ public class Soldier {
 	 * @param y : position y of the soldier
 	 * @param owner : owner of the soldier
 	 */
-	public Soldier(int x, int y,Player owner, Map map) {
+	public Soldier(int x, int y,Player owner) {
 		setPositionX(x);
 		setPositionY(y);
 		setOwner(owner);
-		setMap(map);
-		map.getTile(X, Y).addUnit(this);
+		MapGame.getMap().getTile(X, Y).addUnit(this);
 	}
 	
 	
@@ -59,9 +56,6 @@ public class Soldier {
 	}
 	public int getPositionY() {
 		return Y;
-	}
-	public Map getMap() {
-		return map;
 	}
 	public int getMaxDefence() {
 		return maxDefence;
@@ -88,9 +82,7 @@ public class Soldier {
 	public void setPositionY(int y) {
 		Y = y;
 	}
-	public void setMap(Map m) {
-		map = m;;
-	}
+
 	public void setMaxDefence(int maxDefence) {
 		this.maxDefence = maxDefence;
 	}
@@ -116,6 +108,7 @@ public class Soldier {
 		return move(X, Y - 1);
 	}
 	public boolean moveSouth() {
+		System.out.println("déplacement au sud");
 		return move(X, Y + 1);
 	}
 	public boolean moveWest() {
@@ -162,9 +155,9 @@ public class Soldier {
 	 * @return 0 if the tile is not a Forest or no ressources collectable
 	 */
 	private int collectRessource() {
-		if (map.getTile(X, Y).getType()==TileType.FOREST 
-				&& ((Forest) map.getTile(X, Y)).getProductionRessources() > 0 ){
-			 return ((Forest) map.getTile(X, Y)).collectRessources();
+		if (MapGame.getMap().getTile(X, Y).getType()==TileType.FOREST 
+				&& ((Forest) MapGame.getMap().getTile(X, Y)).getProductionRessources() > 0 ){
+			 return ((Forest) MapGame.getMap().getTile(X, Y)).collectRessources();
 			}else {
 				return 0;
 			}
@@ -184,17 +177,21 @@ public class Soldier {
 	 * @return true if successfully move, false else
 	 */
 	private boolean move(int x,int y) {
-		//out of map, mountain, not ally city or not free Tile -> return false 
-		if (!validTarget(x, y)		// not a mountain and in the range of the map
-				|| (map.getTile(x, y) instanceof City && ((City) map.getTile(x, y)).getOwner() != this.getOwner()) //destination tile is a City occuped by someone else (or nobody)
-				|| (map.getTile(x,y).getUnit()!= null ) //no unit on the destination tile
+		//out of MapGame.getMap(), mountain, not ally city or not free Tile -> return false 
+		if (!validTarget(x, y)		// not a mountain and in the range of the MapGame.getMap()
+				|| (MapGame.getMap().getTile(x, y) instanceof City && ((City) MapGame.getMap().getTile(x, y)).getOwner() != this.getOwner()) //destination tile is a City occuped by someone else (or nobody)
+				|| (MapGame.getMap().getTile(x,y).getUnit()!= null ) //no unit on the destination tile
 				) {
 			return false;
 		}else {// deplacement
-			map.getTile(x, y).addUnit(this);
-			map.getTile(X, Y).removeUnit();
+			MapGame.getMap().getTile(x, y).addUnit(this);
+			MapGame.getMap().getTile(X, Y).removeUnit();
 			setPositionX(x);
 			setPositionY(y);
+			System.out.println("deplacement vers [" + x + "][" + y +"]");
+			System.out.println("Ancienne case :" + MapGame.getMap().getTile(x, y).getUnit());
+			System.out.println("Nouvelle case :" + MapGame.getMap().getTile(X, Y).getUnit());
+			//MapGame.refreshTile(x, y,MapGame.getMap().getTile(X, Y) );
 			return true;
 		}
 	}
@@ -204,15 +201,15 @@ public class Soldier {
 	 * @return true if the tile [x][y] is reachable and false if not (for deplacement or action)
 	 */
 	private boolean validTarget(int x, int y) {
-		//case of non reachable tile :out of map, mountain 
+		//case of non reachable tile :out of MapGame.getMap(), mountain 
 		
-		if ( x < 0 || y < 0 								// case of out of map
-				|| x > map.getTiles().length -1				//
-				|| y > map.getTiles()[0].length -1			//
-				|| map.getTile(x, y).getType()== TileType.MOUTAIN	// case of moutain
+		if ( x < 0 || y < 0 								// case of out of MapGame.getMap()
+				|| x > MapGame.getMap().getTiles().length -1				//
+				|| y > MapGame.getMap().getTiles()[0].length -1			//
+				|| MapGame.getMap().getTile(x, y).getType()== TileType.MOUTAIN	// case of moutain
 				) {
 
-			return false;	//out of map or moutain
+			return false;	//out of MapGame.getMap() or moutain
 		}
 		// if there, then reachable tile
 		return true;
@@ -233,7 +230,7 @@ public class Soldier {
 	private void attack (int x, int y) {
 		// ennemy unit
 		// enemy city
-		Tile target = map.getTile(x, y);
+		Tile target = MapGame.getMap().getTile(x, y);
 		if (target.getType()==TileType.CITY 
 				&& (((City)target).getOwner() == null)
 					||(((City)target).getOwner() != owner)){ // ennemy or neutral city
@@ -304,14 +301,22 @@ public class Soldier {
 	 * remove unit from his player and the tile it's placed on
 	 */
 	private void kill() {
-		if (owner!=null && map!=null) {
+		if (owner!=null && MapGame.getMap()!=null) {
 			owner.removeUnit(this);
-			map.getTile(X, Y).removeUnit();
+			MapGame.getMap().getTile(X, Y).removeUnit();
 		}
 	}
 	
 	public String toString() {
-		return new String ("Soldier");
+		String ret;
+		ret = "X : "+ X;
+		ret += " Y : "+ Y;
+		ret += " maxDefence : "+ maxDefence;
+		ret += " defence : "+ defence;
+		ret += " owner : "+ owner;
+		ret += " sizeDice : "+ sizeDice;
+		
+		return ret;
 	}
 	
 	

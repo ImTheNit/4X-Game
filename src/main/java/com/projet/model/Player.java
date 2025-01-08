@@ -114,6 +114,9 @@ public class Player {
     public ArrayList<City> getCities() {
         return cities;
     }
+    public City getCities(int index) {
+        return cities.get(index);
+    }
     public boolean isDead() {
 		return dead;
 	}
@@ -240,7 +243,7 @@ public class Player {
             return true;
         }
         if (obj == null || getClass() != obj.getClass()) {
-            return false;
+            //return false;
         }
         //System.out.println("test2");
         Player player = (Player) obj;
@@ -284,6 +287,14 @@ public class Player {
 			return false;
 		}
 		return true;
+	}
+	
+	public static void initPlayerFromLogin(String login) {
+		int x = Player.getPlayerIndexByLogin("");
+    	if(x>=0) {//il y a un joueur non affecté
+    		Player.getPlayerList(x).setLogin(login);
+    		
+    	}
 	}
 	
 }
