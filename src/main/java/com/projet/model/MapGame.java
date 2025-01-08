@@ -183,7 +183,7 @@ public class MapGame {
     
     
     
-    // TODO
+    
     public String printJSP(Player player, Tile selection) {
     	String repoImage = new String("ressources/images/");
     	Tile[][] tile = getMap().getTiles();

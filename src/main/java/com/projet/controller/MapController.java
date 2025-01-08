@@ -8,11 +8,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.projet.model.City;
 import com.projet.model.MapGame;
 import com.projet.model.Player;
+import com.projet.model.Soldier;
 
 import jakarta.servlet.http.HttpSession;
 import jakarta.websocket.OnClose;
@@ -50,28 +48,31 @@ public class MapController {
             Session clientSession = entry.getValue();
             int clientId = Integer.parseInt(entry.getKey());
             String username = getListUsername(clientId);
-            String responseMessage = "Message pour "+username +"(client :" + clientId + "): " + message;
             
-            JsonObject jsonObjectMessage = JsonParser.parseString(message).getAsJsonObject();
+
             String player = getListUsername(clientId);
             Player p = Player.getPlayerByLogin(player);
 	    	String html = MapGame.getMap().printJSP(p, MapGame.getMap().getTile(2, 2));
+	    	String button = getButtonHTML(p);
+	    	
 	    	System.out.println(p);
 	    	
-	    	String escapedString = html.replace("\"", "\\\"");
+	    	String escapedStringMap = html.replace("\"", "\\\"");
+	    	String escapedStringButton = button.replace("\"", "\\\"");
 	    	
 	    	ObjectMapper objectMapper = new ObjectMapper();
 	        ObjectNode jsonObject = objectMapper.createObjectNode();
 	    	
-	        jsonObject.put("html", escapedString);
+	        jsonObject.put("html", escapedStringMap);
 	        
 	        //ajouter les stats pour les actualiser
-	        jsonObject.put("battlesWon",0);
+	        jsonObject.put("battlesWon",p.getFightsWon());
 	        jsonObject.put("soldiers",p.getUnits().size());
 	        jsonObject.put("cities",p.getCities().size());
 	        jsonObject.put("score",p.getScore());
 	        jsonObject.put("ressources",p.getProductionPoints());
 	        
+	        jsonObject.put("button", button);
 	        try {
 	            String jsonString = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonObject);
 	            System.out.println(jsonString);
@@ -137,8 +138,25 @@ public class MapController {
     	}
     	return "Void";
     }
+    
+    
     private void addListUserName(String s) {
-    	
     	ListUsername.add(s);
     }
+    
+    private String getButtonHTML(Player p ) {
+    	
+    	String ret = "";
+    	if (p!= null && Player.getActivePlayerIndex()==Player.getPlayerIndexByLogin(p.getLogin())) {
+    		Soldier unit = Player.getPlayerList(Player.getActivePlayerIndex()).getUnits().get(0);
+    		ret += "<button class='button' onclick='moveNorth()'>Move To North</button>"
+    	    		+ "		<button class='button' onclick='moveWest()'>Move To West</button>"
+    	    		+ "		<button class='button' onclick='moveSouth()'>Move To South</button>"
+    	    		+ "		<button class='button' onclick='sendMessage()'>Move To East</button>";
+    	}
+    	
+    	
+    	return ret;
+    }
+    
 }

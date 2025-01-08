@@ -10,6 +10,7 @@ public class Player {
 	private String login;
     private int score;
     private int productionPoints;
+    private int fightsWon;
     private ArrayList<Soldier> units;
     private ArrayList<City> cities;
     private boolean dead = false;
@@ -23,13 +24,14 @@ public class Player {
      * @param units : soldier owned by the player
      * @param cities : cities owned by the player
      */
-    public Player(String login, int score, int productionPoints, ArrayList<Soldier> units, ArrayList<City> cities) {
+    public Player(String login, int score, int productionPoints,int fightWin, ArrayList<Soldier> units, ArrayList<City> cities) {
         if (Player.getPlayerList().size()<4) {
         	this.login = login;
             this.score = score;
             this.productionPoints = productionPoints;
             this.units = units;
             this.cities = cities;
+            this.fightsWon = fightWin;
             addPlayerList(this);
         }else {
         	
@@ -38,10 +40,10 @@ public class Player {
     }
     private static ArrayList<Player> initialisePlayerList() {
     	ArrayList<Player> liste = new ArrayList<Player>();
-    	Player player = new Player("",0,0,new ArrayList<Soldier>(),new ArrayList<City>());
-		Player player2 = new Player("",0,0,new ArrayList<Soldier>(),new ArrayList<City>());
-		Player player3 = new Player("",0,0,new ArrayList<Soldier>(),new ArrayList<City>());
-		Player player4 = new Player("",0,0,new ArrayList<Soldier>(),new ArrayList<City>());
+    	Player player = new Player("",0,0,0,new ArrayList<Soldier>(),new ArrayList<City>());
+		Player player2 = new Player("",0,0,0,new ArrayList<Soldier>(),new ArrayList<City>());
+		Player player3 = new Player("",0,0,0,new ArrayList<Soldier>(),new ArrayList<City>());
+		Player player4 = new Player("",0,0,0,new ArrayList<Soldier>(),new ArrayList<City>());
 		liste.addAll(Arrays.asList(player, player2, player3, player4));
 		return liste;
 	}
@@ -53,13 +55,13 @@ public class Player {
      * @param c : array of city
      */
     public Player(ArrayList<Soldier> s,ArrayList<City> c) {
-    	this("Default",0,0,s,c);
+    	this("Default",0,0,0,s,c);
     }
     /**
      * @name Constructor without parameters
      */
     public Player() {
-    	this("Default",0,0,new ArrayList<Soldier>(),new ArrayList<City>());
+    	this("Default",0,0,0,new ArrayList<Soldier>(),new ArrayList<City>());
     }
     /**
      * @name Constructor with login, search in database for other infos
@@ -106,6 +108,10 @@ public class Player {
     public int getProductionPoints() {
         return productionPoints;
     }
+    
+    public int getFightsWon() {
+        return fightsWon;
+    }
 
     public ArrayList<Soldier> getUnits() {
         return units;
@@ -119,6 +125,12 @@ public class Player {
     }
     public boolean isDead() {
 		return dead;
+	}
+    /**
+	 * @return the activePlayerIndex
+	 */
+	public static int getActivePlayerIndex() {
+		return ActivePlayerIndex;
 	}
     /*
      *  Setters
@@ -141,9 +153,18 @@ public class Player {
     public void setProductionPoints(int productionPoints) {
         this.productionPoints = productionPoints;
     }
-
+    
+    public void setFightWin(int fightWin) {
+        this.fightsWon = fightWin;
+    }
     
     
+	/**
+	 * @param activePlayerIndex the activePlayerIndex to set
+	 */
+	public static void setActivePlayerIndex(int activePlayerIndex) {
+		ActivePlayerIndex = activePlayerIndex;
+	}
     
     
     
@@ -296,5 +317,6 @@ public class Player {
     		
     	}
 	}
+	
 	
 }

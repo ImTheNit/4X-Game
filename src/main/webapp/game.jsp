@@ -100,7 +100,8 @@ if (activeSession == null || activeSession.getAttribute("user") == null) {
 			const citiesContent = jsonObject.cities
 			const scoreContent = jsonObject.score
 			const ressourcesContent = jsonObject.ressources
-
+			const buttonContent = jsonObject.button
+			
 			
         	replaceContentMap(htmlContent);
 			replaceContentBattleWon(battlesWonContent);
@@ -108,6 +109,7 @@ if (activeSession == null || activeSession.getAttribute("user") == null) {
         	replaceContentCities(citiesContent);
         	replaceContentScore(scoreContent);
         	replaceContentRessources(ressourcesContent);
+        	replaceContentButton(buttonContent);
         }
         
         function replaceContentMap(NewContent) {
@@ -134,6 +136,10 @@ if (activeSession == null || activeSession.getAttribute("user") == null) {
         function replaceContentRessources(ressources) {
             const contentDiv = document.getElementById('ressources');
             contentDiv.innerHTML = ressources;
+        }
+        function replaceContentButton(button) {
+            const contentDiv = document.getElementById('buttons');
+            contentDiv.innerHTML = button;
         }
         
 		</script>
@@ -167,44 +173,40 @@ if (activeSession == null || activeSession.getAttribute("user") == null) {
 
 		</table></div>
 		
-		<div class="box buttons">
+		<div class="box buttons" id="buttons">
 		<br>Test
 		</div>
-		<%
-		String test = "test1";
-		%>
+
 		<script>
-		function afficherMessage() {
-            alert("<%= test %>");
-        }
-		
-		function moveNorth(){
-			<% //Player.getPlayerByLogin(((String)activeSession.getAttribute("user"))).getUnits().get(0).moveNorth(); %>
-			alert("deplacement");
-			alert("<% //Player.getPlayerByLogin(((String)activeSession.getAttribute("user"))).getUnits().get(0) %>");
-			sendMessage();
-		}
-		function moveSouth(){
 			
-			alert("<%=Player.getPlayerByLogin(((String)activeSession.getAttribute("user"))).getUnits().size()   %>");
-			<%
-			System.out.println("Taille de la liste des unités : " + Player.getPlayerByLogin(((String)activeSession.getAttribute("user"))).getUnits().size());
-			if (Player.getPlayerByLogin(((String)activeSession.getAttribute("user"))).getUnits().size()>0){
-				Player.getPlayerByLogin(((String)activeSession.getAttribute("user"))).getUnits().get(0).moveSouth();
+			
+			function moveNorth(){
+				<% //Player.getPlayerByLogin(((String)activeSession.getAttribute("user"))).getUnits().get(0).moveNorth(); %>
+				alert("deplacement");
+				alert("<% //Player.getPlayerByLogin(((String)activeSession.getAttribute("user"))).getUnits().get(0) %>");
+				sendMessage();
 			}
-			//Soldier s = new Soldier(4, 4, 7, Player.getPlayerByLogin(((String)activeSession.getAttribute("user"))), MapGame.getMap());
-			//Soldier s1 = new Soldier(5, 5, 7, Player.getPlayerByLogin(((String)activeSession.getAttribute("user"))), MapGame.getMap());
-			%>
-			alert("deplacement au sud");
-			alert("<%=Player.getPlayerByLogin(((String)activeSession.getAttribute("user"))).getUnits().size()   %>");
-			sendMessage();
-			alert("Fin de fonction<%=((String)activeSession.getAttribute("user"))%>");
-		}
+			function moveSouth(unit){
+				
+				alert("test");
+				<%
+				System.out.println("Taille de la liste des unités : " + Player.getPlayerByLogin(((String)activeSession.getAttribute("user"))).getUnits().size());
+				if (Player.getPlayerByLogin(((String)activeSession.getAttribute("user"))).getUnits().size()>0){
+					Player.getPlayerByLogin(((String)activeSession.getAttribute("user"))).getUnits().get(0).moveSouth();
+				}
+				//Soldier s = new Soldier(4, 4, 7, Player.getPlayerByLogin(((String)activeSession.getAttribute("user"))), MapGame.getMap());
+				//Soldier s1 = new Soldier(5, 5, 7, Player.getPlayerByLogin(((String)activeSession.getAttribute("user"))), MapGame.getMap());
+				%>
+				alert("deplacement au sud");
+				alert("<%=Player.getPlayerByLogin(((String)activeSession.getAttribute("user"))).getUnits().size()   %>");
+				sendMessage();
+				alert("Fin de fonction<%=((String)activeSession.getAttribute("user"))%>");
+			}
 		</script>
-		<button class="button" onclick="moveNorth()">Move To North</button>
-		<button class="button" onclick="moveWest()">Move To West</button>
-		<button class="button" onclick="moveSouth()">Move To South</button>
-		<button class="button" onclick="sendMessage()">Move To East</button>
+		<!-- button class="button" onclick="moveNorth()">Move To North</button>
+		<button class="button" onclick="moveWest()">Move To West</button-->
+		<button class="button" onclick="moveSouth(<%=Player.getPlayerByLogin(((String)activeSession.getAttribute("user"))).getUnits()%>)">Move To South FromGame</button>
+		<!--button class="button" onclick="sendMessage()">Move To East</button> -->
 		</div>
 
 		

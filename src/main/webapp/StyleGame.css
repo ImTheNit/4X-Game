@@ -27,6 +27,7 @@
 .buttons {
 	width: 100px;
     background-color: lightgreen;
+    display: flex;
 }
 .button {
     background-color: #4CAF50; /* Vert */
