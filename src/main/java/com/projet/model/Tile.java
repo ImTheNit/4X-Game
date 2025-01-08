@@ -63,7 +63,7 @@ public abstract class Tile {
 	}
     
     
-    public String toString() {
+    public String toString2() {
     	switch (type) {
     		case CITY:
     			return ("City    ");
@@ -92,7 +92,7 @@ public abstract class Tile {
      * @param map : the map in witch the tile is placed
      * @return a boolean corresponding to true/false if the Tile is a corner in the current map
      */
-    boolean isCorner(Map map) {
+    boolean isCorner(MapGame map) {
     	if((x==map.getTiles().length-1 && y==map.getTiles()[0].length-1)
     			|| (x==0 && y==map.getTiles()[0].length-1)
     			|| (x==map.getTiles().length-1 && y==0)
@@ -135,16 +135,16 @@ public abstract class Tile {
      * 
      * @return the owner of the Tile
      */
-    Player getOwnerTile() {
+    public Player getOwnerTile() {
     	
     	//City
+    	//System.out.println(getType());
     	if (getType()==TileType.CITY) {
     		return ((City) this).getOwner();
     	}else if(getUnit()!=null && getUnit().getOwner()!=null) {
     		System.out.println("Owner found");
     		return getUnit().getOwner();
     	}
-    	//System.out.println("unit :"+getUnit());
     	return new Player();
     }
     
@@ -161,5 +161,14 @@ public abstract class Tile {
     	
     }
     
-
+    @Override
+	public String toString() {
+		String ret;
+		ret = "x :"+x;
+		ret += " y :"+y;
+		ret += " type :"+type;
+		ret += " image :"+image;
+		ret += " unit :"+unit;
+		return ret;
+	}
 }
