@@ -11,6 +11,8 @@ public class Player {
     private int score;
     private int productionPoints;
     private int fightsWon;
+    private int index; // index of the Unit/City next to play
+    private TargetActionType targetActionType; // type of the next action City/Soldier 
     private ArrayList<Soldier> units;
     private ArrayList<City> cities;
     private boolean dead = false;
@@ -33,6 +35,8 @@ public class Player {
             this.cities = cities;
             this.fightsWon = fightWin;
             addPlayerList(this);
+            this.setIndex(0);
+            this.setTargetActionType(TargetActionType.SOLDIER);
         }else {
         	
         }
@@ -112,6 +116,13 @@ public class Player {
     public int getFightsWon() {
         return fightsWon;
     }
+    
+    public int getIndex() {
+        return index;
+    }
+    public TargetActionType getTargetActionType() {
+    	return targetActionType;
+    }
 
     public ArrayList<Soldier> getUnits() {
         return units;
@@ -157,7 +168,12 @@ public class Player {
     public void setFightWin(int fightWin) {
         this.fightsWon = fightWin;
     }
-    
+    public void setIndex(int index) {
+        this.index = index;
+    }
+    public void setTargetActionType(TargetActionType type) {
+    	this.targetActionType=type;
+    }
     
 	/**
 	 * @param activePlayerIndex the activePlayerIndex to set
@@ -206,6 +222,52 @@ public class Player {
 		this.dead = dead;
 	}
 	
+	
+	/**
+	 * 
+	 * @return true if the same player have to play next
+	 * else return false
+	 */
+	public boolean incrementAction() {
+		if (targetActionType==TargetActionType.CITY) {
+			if (index + 1 < cities.size()) {
+				index ++;
+				return true;
+			}else {
+				index = 0;
+				setTargetActionType(TargetActionType.SOLDIER);
+				//setActivePlayerIndex((ActivePlayerIndex + 1 )% 4);
+				incrementPlayerIndex();
+				return false;
+			}
+		}else if (targetActionType==TargetActionType.SOLDIER) {
+			if (index + 1 < units.size()) {
+				index ++;
+				return true;
+			}else {
+				index = 0;
+				setTargetActionType(TargetActionType.CITY);
+				return true;
+			}
+		}
+		// never reach
+		return true;
+	}
+	
+	
+	/**
+	 * Change index to the next existing player
+	 */
+	private void incrementPlayerIndex() {
+		Player p = getPlayerList(ActivePlayerIndex + 1);
+
+		if (p != null
+				&& p.getLogin()!="") {
+			setActivePlayerIndex((ActivePlayerIndex + 1 )% 4);
+		}else {
+			setActivePlayerIndex(0);
+		}
+	}
 	/*
 	 * methods
 	 */
@@ -317,6 +379,9 @@ public class Player {
     		
     	}
 	}
+	
+	
+	
 	
 	
 }

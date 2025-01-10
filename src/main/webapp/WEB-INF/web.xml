@@ -9,4 +9,14 @@
     <welcome-file>default.jsp</welcome-file>
     <welcome-file>default.htm</welcome-file>
   </welcome-file-list>
+  <servlet>
+    <description></description>
+    <display-name>ActionsController2</display-name>
+    <servlet-name>ActionsController2</servlet-name>
+    <servlet-class>com.projet.controller.ActionsController2</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>ActionsController2</servlet-name>
+    <url-pattern>/ActionsController2</url-pattern>
+  </servlet-mapping>
 </web-app>

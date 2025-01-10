@@ -5,6 +5,7 @@ public class City extends Tile{
     private int defensePoints;
     private int maxDefensePoints;
     private static final int productionRessources = 5;
+    public static final int costRecruitement = 6;
     private Player owner;
 
 
@@ -127,6 +128,27 @@ public class City extends Tile{
     	}
     }
 
+    
+    /**
+     * Recruit a soldier and place it into the city
+     * @return true if successfully recruited
+     * else return false
+     */
+    public boolean recruitUnit() {
+    	getOwner().setProductionPoints(10);//TODO tmp
+    	if (MapGame.getMap().getTile(getX(), getY()).getUnit() == null
+    			&& getOwner()!= null
+    			&& getOwner().getProductionPoints()>City.costRecruitement) {
+    		//assign soldier
+    		Soldier s = new Soldier(getX(), getY(), getOwner());
+    		this.setUnit(s);
+    		//pay the cost to recruit
+    		getOwner().setProductionPoints(getOwner().getProductionPoints() - City.costRecruitement);
+    		return true;
+    	}
+    	return false;
+    		
+    }
     @Override
 	public String toString() {
 		String ret = super.toString();
