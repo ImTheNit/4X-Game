@@ -1,5 +1,6 @@
 package com.projet.model;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 import com.projet.model.Creator.CreatorCity;
@@ -221,6 +222,10 @@ public class MapGame {
         				//Current Player 
         				}else if(p.equals(player)){
         					ret += "<img src=" + repoImage + "borderActivePlayer.png alt = borderActivePlayer width=100 height=100  class=img3>";
+        					
+        					// Non connnected player
+        				}else if (p.getLogin()==""){
+        					//TODO cadre noir ? 
         					
         					//player 0
         				}else if (p.equals(Player.getPlayerList(0))){

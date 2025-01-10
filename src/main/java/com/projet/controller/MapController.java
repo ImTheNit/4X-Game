@@ -26,118 +26,75 @@ import jakarta.websocket.server.ServerEndpoint;
 @ServerEndpoint(value = "/map" , configurator = HttpSessionConfigurator.class)
 public class MapController {
     //private static final Set<Session> clients = new CopyOnWriteArraySet<>();
-    private static Map<String, Session> clients = new ConcurrentHashMap<>();
-    private static ArrayList<String> ListUsername = new ArrayList<String>();
-    @OnOpen
-    public void onOpen(Session session) {
-	    //clients.add(session);
-    	
-    	HttpSession httpSession = (HttpSession) session.getUserProperties().get(HttpSession.class.getName());
-        String username = (String) httpSession.getAttribute("user");
-        
-    	session.getUserProperties().put("usernameD", "NomUtilisateur");
-	    clients.put(session.getId(), session);
-	    
-	    addListUserName(username);
-	    System.out.println("Connexion ouverte, client : " + session.getId() + "info supp :" + username);
-    }
     
-    @OnMessage
-    public void onMessage(String message, Session session) throws IOException {
-	    System.out.println("Message reçu de " + message);
+    
+    
+    
+    public static ObjectNode onMessage(String message, Session session,int clientId,Player p,ObjectNode jsonObject) throws IOException {
+	    
 	    try {
 	        Thread.sleep(50); // wait 50 millisecond
 	    } catch (InterruptedException e) {
 	        e.printStackTrace();
 	    }
-	    
-	    for (Map.Entry<String, Session> entry : clients.entrySet()) {
-            Session clientSession = entry.getValue();
-            int clientId = Integer.parseInt(entry.getKey());
-            
+        Tile selection = MapGame.getMap().getTile(0, 0); // default value;
 
-            String player = getListUsername(clientId);
-            Player p = Player.getPlayerByLogin(player);
-            Tile selection = MapGame.getMap().getTile(0, 0); // default value;
-
-            switch (p.getTargetActionType()) {
-            case CITY:
-            	if(p.getCities().size()>0) {
-            		int x =p.getCities(p.getIndex()).getX();
-                	int y =p.getCities(p.getIndex()).getY();
-                	selection = MapGame.getMap().getTile(x, y);
-            	}
-            	break;
-            	
-            case SOLDIER:
-            	if (p.getUnits().size()>0) {
-            		int x1 = p.getUnits().get(p.getIndex()).getPositionX();
-                	int y1 = p.getUnits().get(p.getIndex()).getPositionY();
-                	selection = MapGame.getMap().getTile(x1, y1);
-            	}
-            	break;
-            	
-            default :
-            	System.out.println("default value for selection");
-            	selection = MapGame.getMap().getTile(0, 0); // default value
-            	break;
-            }
-
-            
-	    	String html = MapGame.getMap().printJSP(p, selection);
-	    	String button = getButtonHTML(p);
-	    	
-	    	
-	    	String escapedStringMap = html.replace("\"", "\\\"");
-	    	//String escapedStringButton = button.replace("\"", "\\\"");
-	    	
-	    	ObjectMapper objectMapper = new ObjectMapper();
-	        ObjectNode jsonObject = objectMapper.createObjectNode();
-	    	
-	        jsonObject.put("html", escapedStringMap);
-	        
-	        //ajouter les stats pour les actualiser
-	        jsonObject.put("battlesWon",p.getFightsWon());
-	        jsonObject.put("soldiers",p.getUnits().size());
-	        jsonObject.put("cities",p.getCities().size());
-	        jsonObject.put("score",p.getScore());
-	        jsonObject.put("ressources",p.getProductionPoints());
-	        
-	        jsonObject.put("button", button);
-	        try {
-	            String jsonString = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonObject);
-	            
-	            clientSession.getAsyncRemote().sendText(jsonString);
-	        } catch (Exception e) {
-	            e.printStackTrace();
-	        }  
+        switch (p.getTargetActionType()) {
+        case CITY:
+        	if(p.getCities().size()>0) {
+        		int x =p.getCities(p.getIndex()).getX();
+            	int y =p.getCities(p.getIndex()).getY();
+            	selection = MapGame.getMap().getTile(x, y);
+        	}
+        	break;
+        	
+        case SOLDIER:
+        	if (p.getUnits().size()>0) {
+        		int x1 = p.getUnits().get(p.getIndex()).getPositionX();
+            	int y1 = p.getUnits().get(p.getIndex()).getPositionY();
+            	selection = MapGame.getMap().getTile(x1, y1);
+        	}
+        	break;
+        	
+        default :
+        	System.out.println("default value for selection");
+        	selection = MapGame.getMap().getTile(0, 0); // default value
+        	break;
         }
+
+        
+    	String html = MapGame.getMap().printJSP(p, selection);
+    	String button = getButtonHTML(p,selection);
+    	
+    	
+    	String escapedStringMap = html.replace("\"", "\\\"");
+    	
+        jsonObject.put("action","map");
+        jsonObject.put("html", escapedStringMap);
+        
+        //ajouter les stats pour les actualiser
+        jsonObject.put("battlesWon",p.getFightsWon());
+        jsonObject.put("soldiers",p.getUnits().size());
+        jsonObject.put("cities",p.getCities().size());
+        jsonObject.put("score",p.getScore());
+        jsonObject.put("ressources",p.getProductionPoints());
+        
+        jsonObject.put("button", button);
+
+        
+        return jsonObject; 
+    }
 	    
-	}
 
     
-    @OnClose
-    public void onClose(Session session) {
-        clients.remove(session);
-        System.out.println("session fermée : " + session.getId());
-    }
     
     
     
     
-    public String getListUsername(int index) {
-    	if (ListUsername!= null && ListUsername.size()>=index) {
-    		return ListUsername.get(index);
-    	}
-    	return "Void";
-    }
     
     
-    private void addListUserName(String s) {
-    	ListUsername.add(s);
-    }
     
-    private String getButtonHTML(Player p ) {
+    private static String getButtonHTML(Player p ,Tile selection) {
     	// fonction générique
     	// stocker en session le type (Ville/soldat) ainsi que son index
     	// modifier la selection pour la cible de l'action
@@ -170,11 +127,12 @@ public class MapController {
     		}
     		else if (p.getTargetActionType()==TargetActionType.CITY) {
 
-    			if (p.getProductionPoints()>City.costRecruitement) {
+    			if (p.getProductionPoints()>=City.costRecruitement 
+    					&& selection.getUnit() == null) {
     				ret += "<button class='button' onclick='recruitSoldier()'>Recruit a unit</button>";
-    			}else {
-    				ret += "<button class='button' onclick='pass()'>Pass</button>";
     			}
+    			ret += "<button class='button' onclick='pass()'>Pass</button>";
+    			
     			
     		}
     	}
@@ -182,7 +140,32 @@ public class MapController {
     	
     	return ret;
     }
+
+	
     
-    
+	public void sendMessage(Session clientSession, String jsonString) {
+	    // Fonction pour vérifier l'état de la session et envoyer le message
+	    Runnable checkAndSend = new Runnable() {
+	        @Override
+	        public void run() {
+	            if (clientSession != null && clientSession.isOpen()) {
+	                clientSession.getAsyncRemote().sendText(jsonString);
+	                System.out.println("Message envoyé : " + jsonString);
+	            } else {
+	                System.out.println("La session n'est pas encore ouverte, attente...");
+	                try {
+	                    Thread.sleep(100); // Attendre 100ms avant de réessayer
+	                } catch (InterruptedException e) {
+	                    e.printStackTrace();
+	                }
+	                run(); // Réessayer
+	            }
+	        }
+	    };
+
+	    // Lancer la vérification et l'envoi
+	    checkAndSend.run();
+	}
+
     
 }

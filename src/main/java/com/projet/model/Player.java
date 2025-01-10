@@ -135,6 +135,7 @@ public class Player {
         return cities.get(index);
     }
     public boolean isDead() {
+    	//refreshDead();
 		return dead;
 	}
     /**
@@ -165,7 +166,7 @@ public class Player {
         this.productionPoints = productionPoints;
     }
     
-    public void setFightWin(int fightWin) {
+    public void setFightsWon(int fightWin) {
         this.fightsWon = fightWin;
     }
     public void setIndex(int index) {
@@ -229,6 +230,7 @@ public class Player {
 	 * else return false
 	 */
 	public boolean incrementAction() {
+		refreshScore();
 		if (targetActionType==TargetActionType.CITY) {
 			if (index + 1 < cities.size()) {
 				index ++;
@@ -238,6 +240,7 @@ public class Player {
 				setTargetActionType(TargetActionType.SOLDIER);
 				//setActivePlayerIndex((ActivePlayerIndex + 1 )% 4);
 				incrementPlayerIndex();
+				collectRessources();
 				return false;
 			}
 		}else if (targetActionType==TargetActionType.SOLDIER) {
@@ -380,8 +383,15 @@ public class Player {
     	}
 	}
 	
+	private void collectRessources() {
+		for (int i = 0 ; i < cities.size(); i ++) {
+			getCities(i).earnRessource();
+		}
+	}
 	
 	
-	
+	private void refreshScore() {
+		score = productionPoints + (fightsWon * 2) + (cities.size() * 5 ) + (units.size() * 3) ; 
+	}
 	
 }

@@ -2,6 +2,8 @@ package com.projet.model;
 
 import java.util.Random;
 
+import com.projet.controller.FightController;
+
 public class Soldier {
 	
 	/**
@@ -243,9 +245,12 @@ public class Soldier {
 		// ennemy unit
 		// enemy city
 		Tile target = MapGame.getMap().getTile(x, y);
+		if (!validTarget(x, y)) {
+			return false;
+		}
 		if (target.getType()==TileType.CITY 
-				&& (((City)target).getOwner() == null)
-					||(((City)target).getOwner() != owner)){ // ennemy or neutral city
+				&& ((((City)target).getOwner() == null)
+					||(((City)target).getOwner() != owner))){ // ennemy or neutral city
 			return attack((City)target);
 		}else if (target.getUnit() != null						// unit on the target Tile
 				&& target.getUnit().getOwner()!= owner) {		// from another player
@@ -277,14 +282,17 @@ public class Soldier {
 	 */
 	private boolean attackSoldier(Soldier target) {
 		if (target != null) {
+			FightController.setIsFight(true);
 			Random random = new Random();
 			int powerOfHit = random.nextInt(getSizeDice()); // generate a number between 0 and sizeDice
-			
+			FightController.setLastDamageDealt(powerOfHit);
 			if (powerOfHit>=target.getDefence()) {
 				target.kill();
-				
+				FightController.setRemainingHp(0);
+				winFight();
 			}else {
 				target.setDefence(target.getDefence()-powerOfHit); // deal damage
+				FightController.setRemainingHp(target.getDefence());
 			}
 			return true;
 		}
@@ -298,16 +306,20 @@ public class Soldier {
 	private boolean attackCity(City target) {
 		System.out.println("attackCity");
 		if (target != null) {
+			FightController.setIsFight(true);
 			Random random = new Random();
 			int powerOfHit = random.nextInt(getSizeDice()); // generate a number between 0 and sizeDice
 			
 			if (target.getUnit() == null) { //no defensive unit
+				FightController.setLastDamageDealt(powerOfHit);
 				System.out.println("No Defense hit : "+powerOfHit + " City : "+target.getDefensePoints());
 				if (powerOfHit>=target.getDefensePoints()) {
 					target.newOwner(owner); 
-									
+					FightController.setRemainingHp(0);
+					winFight();
 				}else {
 					target.setDefensePoints(target.getDefensePoints()-powerOfHit); // deal damage
+					FightController.setRemainingHp(target.getDefensePoints());
 				}
 			}else { //defensive unit
 				attackSoldier(target.getUnit());
@@ -339,6 +351,8 @@ public class Soldier {
 		return ret;
 	}
 	
-	
+	private void winFight() {
+		getOwner().setFightsWon(getOwner().getFightsWon()+1);
+	}
 	
 }

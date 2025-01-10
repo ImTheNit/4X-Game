@@ -4,7 +4,7 @@ public class City extends Tile{
 
     private int defensePoints;
     private int maxDefensePoints;
-    private static final int productionRessources = 5;
+    private static final int productionRessources = 1;
     public static final int costRecruitement = 6;
     private Player owner;
 
@@ -122,7 +122,7 @@ public class City extends Tile{
     /**
      * give ressource to the owner of the city
      */
-    private void earnRessource() {
+    void earnRessource() {
     	if(owner!=null) {
     		owner.setProductionPoints(owner.getProductionPoints()+productionRessources);
     	}
@@ -135,10 +135,9 @@ public class City extends Tile{
      * else return false
      */
     public boolean recruitUnit() {
-    	getOwner().setProductionPoints(10);//TODO tmp
     	if (MapGame.getMap().getTile(getX(), getY()).getUnit() == null
     			&& getOwner()!= null
-    			&& getOwner().getProductionPoints()>City.costRecruitement) {
+    			&& getOwner().getProductionPoints()>=City.costRecruitement) {
     		//assign soldier
     		Soldier s = new Soldier(getX(), getY(), getOwner());
     		this.setUnit(s);

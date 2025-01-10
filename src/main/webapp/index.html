@@ -1,30 +1,85 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Deux Divs Côte à Côte</title>
+    <title>Résumé de Combat</title>
     <style>
-        .container {
+        /*body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
             display: flex;
-        }
-        .box {
-            width: 50%;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }*/
+        .fight-summary {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             padding: 20px;
-            box-sizing: border-box;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
         }
-        .box1 {
-            background-color: lightblue;
+        .fight-summary h2 {
+            margin-top: 0;
+            color: #333;
         }
-        .box2 {
-            background-color: lightgreen;
+        .fight-summary .stats-fight {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+        }
+        .fight-summary .stats-fight div {
+            flex: 1;
+            margin: 0 10px;
+        }
+        .fight-summary .stats-fight div p {
+            margin: 5px 0;
+            font-size: 1.2em;
+        }
+        .fight-summary .stats-fight div span {
+            display: block;
+            font-size: 2em;
+            font-weight: bold;
+            color: #e74c3c;
+        }
+        .fight-summary .stats-fight div span.hp {
+            color: #2ecc71;
+        }
+        .fight-summary .result {
+            margin-bottom: 20px;
+        }
+        .fight-summary .result img {
+            max-width: 100px;
+            height: auto;
+        }
+        .fight-summary .result p {
+            font-size: 1.2em;
+            margin: 10px 0 0;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="box box1">Div 1</div>
-        <div class="box box2">Div 2</div>
+    <div class="fight-summary">
+        <h2>Résumé de Combat</h2>
+        <div class="result">
+            <img src="ressources/images/victory.png" alt="Victoire">
+            <p>Victoire</p>
+        </div>
+        <div class="stats-fight">
+            <div>
+                <p>Dégâts Infligés</p>
+                <span>150</span>
+            </div>
+            <div>
+                <p>PV Restants</p>
+                <span class="hp">50</span>
+            </div>
+        </div>
     </div>
 </body>
 </html>

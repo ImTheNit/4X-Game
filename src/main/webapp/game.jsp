@@ -11,6 +11,10 @@
 <%@page import="jakarta.websocket.Session"%>
 <%@page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+   
+
+<jsp:include page="score.jsp" />
+
 <!DOCTYPE html>
 <%
 //Vérification de l'existence de la session
@@ -26,6 +30,7 @@ if (activeSession == null || activeSession.getAttribute("user") == null) {
 <meta charset="UTF-8">
 <title>4X-Game</title>
 <link rel="stylesheet" href="StyleGame.css">
+<link rel="icon" href="ressources/images/soldier.png" type="image/x-icon">
 
 </head>
 <body>
@@ -54,25 +59,30 @@ if (activeSession == null || activeSession.getAttribute("user") == null) {
         
     </div>
 		
-		<div class="Container">
+		<div class="container">
 		<div class="box map">
 		
 		<script>
-		const wsMap = new WebSocket('ws://'+window.location.host+"/4X-Game/map");
-		wsMap.onopen = () => {
-            console.log('Connexion WebSocket établie');
-            wsMap.send(JSON.stringify({ type: 'join', pseudonyme: "pseudo",session: "<%=session.getAttribute("user")%>" }));// remplacer par login
+	
+		
+		
+		const ws = new WebSocket('ws://'+window.location.host+"/4X-Game/MainController");
+		ws.onopen = () => {
+            console.log('Connexion WebSocket établie ');
+            ws.send(JSON.stringify({ session: "<%=session.getAttribute("user")%>" }));
         };
 
-        wsMap.onmessage = (event) => {
-        	console.log('message recu ' );
+        ws.onmessage = (event) => {
+        	console.log('message recu de FrontController' );
             const message = JSON.parse(event.data);
             console.log("message : " + message);
-            replaceContent(event.data)
+            replaceContent(event.data);
+            replaceFightContent(event.data);
+            checkEnd(event.data);
         };
 
-        wsMap.onclose = () => {
-            console.log('Connexion WebSocket fermée');
+        ws.onclose = () => {
+            console.log('Connexion WebSocket fermée ');
         };
 		
         
@@ -82,36 +92,45 @@ if (activeSession == null || activeSession.getAttribute("user") == null) {
             if (messageText) {
                 const message = {
                     type: 'message',
-                    pseudonyme: "pseudo",
-                    text: "texte",
                     session: "<%=session.getAttribute("user")%>"
                 };
-                wsMap.send(JSON.stringify(message));
+                ws.send(JSON.stringify(message));
             }
         }
         
         function replaceContent(newHtml) {
         	const jsonObject = JSON.parse(newHtml);
+        	           
             const htmlContent = jsonObject.html;
-			const battlesWonContent = jsonObject.battlesWon
-			const soldiersContent = jsonObject.soldiers
-			const citiesContent = jsonObject.cities
-			const scoreContent = jsonObject.score
-			const ressourcesContent = jsonObject.ressources
-			const buttonContent = jsonObject.button
+			const battlesWonContent = jsonObject.battlesWon;
+			const soldiersContent = jsonObject.soldiers;
+			const citiesContent = jsonObject.cities;
+			const scoreContent = jsonObject.score;
+			const ressourcesContent = jsonObject.ressources;
+			const buttonContent = jsonObject.button;
 			
 			
-        	replaceContentMap(htmlContent);
-			replaceContentBattleWon(battlesWonContent);
-        	replaceContentSoldiers(soldiersContent);
-        	replaceContentCities(citiesContent);
-        	replaceContentScore(scoreContent);
-        	replaceContentRessources(ressourcesContent);
-        	replaceContentButton(buttonContent);
+			replaceContentHtml(htmlContent,"map");
+			replaceContentHtml(battlesWonContent,"battles-won");
+			replaceContentHtml(soldiersContent,"soldiers");
+			replaceContentHtml(citiesContent,"cities");
+			replaceContentHtml(scoreContent,"score");
+			replaceContentHtml(ressourcesContent,"ressources");
+			replaceContentHtml(buttonContent,"buttons");
         }
         
-        function replaceContentMap(NewContent) {
-            const contentDiv = document.getElementById('map');
+        function checkEnd(newHtml){
+        	const jsonObject = JSON.parse(newHtml);
+        	const redirection = jsonObject.redirection;
+        	if (redirection === 0){
+        		console.log("Fin de partie")
+        	}
+        	
+        }
+
+        
+        function replaceContentHtml(NewContent,chaine) {
+            const contentDiv = document.getElementById(chaine);
             contentDiv.innerHTML = NewContent;
             
         }
@@ -148,7 +167,10 @@ if (activeSession == null || activeSession.getAttribute("user") == null) {
 		
 		<div class="box buttons" id="buttons">
 		</div>
-
+		
+		<jsp:include page="combat.jsp" />
+		<div class="box combat" id="fight">
+		</div>
 		<script>
 			
 			
