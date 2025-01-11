@@ -91,7 +91,6 @@ public class MapController {
     			&& (Player.getActivePlayerIndex()==Player.getPlayerIndexByLogin(p.getLogin()))
     			) {
     		
-    		System.out.println("Next expected action for : " + p.getTargetActionType() + " indice : " +p.getIndex());
     		//case of a soldier
     		
     		if (p.getTargetActionType()==TargetActionType.SOLDIER ) { // remaining unit have top play
@@ -116,7 +115,6 @@ public class MapController {
             	    ret += "<button class='button' onclick='action(\"pass\")'>Pass</button>";
     			}else {
     				p.incrementAction();
-    				System.out.println("Next expected action for : " + p.getTargetActionType() + " indice : " +p.getIndex());
     			}
         		
     		}
@@ -130,9 +128,6 @@ public class MapController {
     			
     			
     		}else {
-    			if (p.isDead()) {
-    				System.out.println("Le joueur est mort");
-    			}
     		}
     	}
     	

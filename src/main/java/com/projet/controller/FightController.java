@@ -60,7 +60,7 @@ public class FightController {
 		            "</div>";
 		    
 		    
-		    setIsFight(false);
+		    //setIsFight(false);
 	    }
 	    jsonObject.put("fightSummary", fightSummary);
 		return jsonObject;
