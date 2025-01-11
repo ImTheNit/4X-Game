@@ -44,7 +44,7 @@ public class LoginController extends HttpServlet{
 		    session.setAttribute("user", username);
 		    if(!Player.playerAlreadyConnected(username)) {
 		    	Player.initPlayerFromLogin(username);
-		    	System.out.println("Joueur initialisé");
+		    	System.out.println("Joueur initialisï¿½");
 		    	}
 		    response.sendRedirect("game.jsp");
 		} catch (SQLException e) {

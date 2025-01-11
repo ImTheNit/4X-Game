@@ -19,6 +19,8 @@ import javax.crypto.spec.PBEKeySpec;
 
 import org.apache.tomcat.dbcp.dbcp2.DriverManagerConnectionFactory;
 
+import com.projet.model.Player;
+
 public class SQL {
 	private static final String pathToDrop = "/com/ressources/sql/drop.sql";
 	private static final String pathToCreate = "/com/ressources/sql/schema.sql";
@@ -109,10 +111,8 @@ public class SQL {
 	public static ResultSet executeSelect(String query) throws SQLException {
 		try  {
 			Connection connection = SQL.getConnection(getJdbcUrl());
-	        System.out.println("Successfully connected to database");
 	        Statement statement = connection.createStatement();
 	        //content = "DROP DATABASE IF EXISTS 4XGame;";
-	        System.out.println(query);
 	        ResultSet result = statement.executeQuery(query);
 	        return result;
         } catch (Exception e) {
@@ -124,10 +124,8 @@ public class SQL {
 	
 	public static void executeInsert(String query) throws SQLException {
 		try (Connection connection = SQL.getConnection(getJdbcUrl())) {
-	        System.out.println("Successfully connected to database");
 	        Statement statement = connection.createStatement();
 	        //content = "DROP DATABASE IF EXISTS 4XGame;";
-	        System.out.println(query);
 	        statement.executeUpdate(query);
 	        return;
         } catch (Exception e) {
@@ -136,22 +134,21 @@ public class SQL {
         return ;
 	}
 	
+	/**
+	 * 
+	 * @param username corresponds to the username you test the existence in the database
+	 * @return true if username in the database
+	 * @throws SQLException
+	 */
 	public static boolean PlayerNameTaken(String username) throws SQLException {
 		String chaine = "SELECT login"
 					+" FROM fourxgame.player"
 					+" WHERE LOWER(login) = LOWER('"+username+"')";
 		ResultSet test = executeSelect(chaine);
 		if(test ==null) {
-			System.out.println("test null");
 			return false;
 		}
-		System.out.println(test.next());
-		while(test.next()) {
-			System.out.println(test.toString());
-			
-		}
-		
-		return test.next()?false:true;//is false if the cursor is after the last row -> case of no row at all
+		return test.next();//is false if the cursor is after the last row -> case of no row at all
 	}
 	
 	/*
@@ -220,4 +217,19 @@ public class SQL {
 		}
 	}
 	
+	public static void SaveGame() throws SQLException {
+		String query = new String("INSERT INTO FourXGame.Game ('player1_login','player2_login', 'player3_login', 'player4_login')\n VALUES('");
+		String queryUpdatePlayer = new String("");
+		for(int i =0; i<Player.getPlayerList().size(); i++) {
+			query+= "'"+Player.getPlayerList(i).getLogin()+"'";
+			//Mise a jour du score du joueur dans la bdd
+				queryUpdatePlayer = "UPDATE FourXGame.Player"+
+						"SET Score +="+ SQL.executeSelect("SELECT Score FROM FourXGame.Player WHERE LOWER(login) = LOWER('"+Player.getPlayerList(i).getLogin()+"');").getInt("Score")+
+						"WHERE login = LOWER(‘"+Player.getPlayerList(i).getLogin()+"’);";
+				SQL.executeInsert(queryUpdatePlayer);
+			
+		}
+		query+=")'";
+		SQL.executeInsert(query);
+	}
 }

@@ -1,9 +1,6 @@
 -- Drop the Game table if it exists
 DROP TABLE IF EXISTS Game;
 
--- Drop the Map table if it exists
-DROP TABLE IF EXISTS Map;
-
 -- Drop the Player table if it exists
 DROP TABLE IF EXISTS Player;
 
