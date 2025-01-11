@@ -16,21 +16,17 @@ import jakarta.servlet.http.HttpSession;
 @WebServlet("/login")
 public class LoginController extends HttpServlet{
     private static final long serialVersionUID = 1L;
+    
 
-
+    /**
+     * launch verification of the identity of the player in the database, create an identity if necessary and assign a GameSeat (seat in the game) if possible
+     */
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
 
-        //TODO changer verification pour la bdd
         try {
-			if (/*("admin".equals(username) && "password".equals(password))
-					|| ("admin2".equals(username) && "password".equals(password))
-					|| ("admin3".equals(username) && "password".equals(password))
-					|| ("admin4".equals(username) && "password".equals(password))
-					*/
-					SQL.PlayerNameTaken(username) 
-					){
+			if (SQL.PlayerNameTaken(username)){
 				if( !SQL.PlayerLoginVerification(username, password)) {
 					// Redirection vers la page de connexion avec un message d'erreur, mot de passe incorrect
 					response.sendRedirect("login.jsp?error=true");
@@ -44,7 +40,7 @@ public class LoginController extends HttpServlet{
 		    session.setAttribute("user", username);
 		    if(!Player.playerAlreadyConnected(username)) {
 		    	Player.initPlayerFromLogin(username);
-		    	System.out.println("Joueur initialisé");
+		    	System.out.println("Joueur initialisï¿½");
 		    	}
 		    response.sendRedirect("game.jsp");
 		} catch (SQLException e) {

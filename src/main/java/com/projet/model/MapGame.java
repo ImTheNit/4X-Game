@@ -240,7 +240,7 @@ public class MapGame {
         					
         					// Non connnected player
         				}else if (p.getLogin()==""){
-        					//TODO cadre noir ? 
+        					ret += "<img src=" + repoImage + "borderNotConnected.png alt = borderNotConnected width=100 height=100  class=img3>"; 
         					
         					//player 0
         				}else if (p.equals(Player.getPlayerList(0))){

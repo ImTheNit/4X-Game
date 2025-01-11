@@ -12,23 +12,14 @@ CREATE TABLE IF NOT EXISTS Player (
     ressources INT DEFAULT 0
 );
 
--- Create the Map table with IF NOT EXISTS condition and add the turn attribute
-CREATE TABLE IF NOT EXISTS Map (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    map_object BLOB NOT NULL, -- Use BLOB to store the Java object of type Map
-    turn INT DEFAULT 0
-);
 
 -- Create the Game table with IF NOT EXISTS condition and add the turn attribute
 CREATE TABLE IF NOT EXISTS Game (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    map_id INT,
     player1_login VARCHAR(50),
     player2_login VARCHAR(50),
     player3_login VARCHAR(50),
     player4_login VARCHAR(50),
-    turn INT DEFAULT 0,
-    FOREIGN KEY (map_id) REFERENCES Map(id),
     FOREIGN KEY (player1_login) REFERENCES Player(login),
     FOREIGN KEY (player2_login) REFERENCES Player(login),
     FOREIGN KEY (player3_login) REFERENCES Player(login),
