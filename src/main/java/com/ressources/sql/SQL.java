@@ -60,12 +60,7 @@ public class SQL {
     	Class.forName("com.mysql.cj.jdbc.Driver");
     	return DriverManager.getConnection(getJdbcUrl(), getUsername(), getPassword());
     }
-	
-	/*
-	 * methods
-	 */
-
-	
+    
 	private String getScriptFromFile(String PathToFile) {
 		String content = "";
 		InputStream inputStream = SQL.class.getResourceAsStream(PathToFile);
@@ -99,15 +94,35 @@ public class SQL {
 	private String getScriptDrop() {
 		return getScriptFromFile(pathToDrop);
 	}
-	
+	/*
+	 * methods
+	 */
+
+
+	/**
+	 * create the database from the script in pathToCreate
+	 * @return true when executed
+	 * @throws SQLException
+	 */
 	public boolean createDatabase() throws SQLException {
 		executeSelect(getScriptCreate());
 		return true;
 	}
+	/**
+	 * Suppress the database with the script in pathToDrop
+	 * @return true when executed
+	 * @throws SQLException
+	 */
 	public boolean dropDatabase() throws SQLException {
 		executeSelect(getScriptDrop());
 		return true;
 	}
+	/**
+	 * execute the SQL query in query
+	 * @param query is the SQL code that gets executed in the database, the query as to be a select
+	 * @return a resultSet corresponding to the request of query in the database
+	 * @throws SQLException
+	 */
 	public static ResultSet executeSelect(String query) throws SQLException {
 		try  {
 			Connection connection = SQL.getConnection(getJdbcUrl());
@@ -122,6 +137,11 @@ public class SQL {
         return null;
 	}
 	
+	/**
+	 * execute the SQL query in query
+	 * @param query is the SQL code that gets executed in the database, the query as to be an insert or an update or a delete
+	 * @throws SQLException
+	 */
 	public static void executeInsert(String query) throws SQLException {
 		try (Connection connection = SQL.getConnection(getJdbcUrl())) {
 	        Statement statement = connection.createStatement();
@@ -151,8 +171,13 @@ public class SQL {
 		return test.next();//is false if the cursor is after the last row -> case of no row at all
 	}
 	
-	/*
-	 * @return true if the player with the username has the same password
+	/**
+	 * 
+	 * @param username login of the player in the database
+	 * @param password contains the salt and the encrypted password in the database
+	 * @return true if the password given correspond to the password encrypted in the database
+	 * @throws SQLException
+	 * @throws Exception
 	 */
 	public static boolean PlayerLoginVerification(String username, String password) throws SQLException, Exception {
 		String chaine = "SELECT salt,password \n"
@@ -166,7 +191,13 @@ public class SQL {
 		return false;
 	}
 	
-	
+	/**
+	 * 
+	 * @param mdp contains a password to verify in the database
+	 * @param inputPassword contains the password to compare with
+	 * @return true if both passwords are the same
+	 * @throws Exception
+	 */
 	public static boolean verifyPassword(Password mdp,String inputPassword) throws Exception {
         KeySpec spec = new PBEKeySpec(inputPassword.toCharArray(), mdp.getSalt(), iterationCount, keyLength);
         SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
@@ -177,6 +208,13 @@ public class SQL {
         return newHash.equals(mdp.getPassword());
     }
 	
+	/**
+	 * 
+	 * @param password password to encrypt
+	 * @return a password corresponding to the encrypted original password with his salt
+	 * @throws InvalidKeySpecException
+	 * @throws NoSuchAlgorithmException
+	 */
 	public static Password GetHashPassword(String password) throws InvalidKeySpecException, NoSuchAlgorithmException
     {
         SecureRandom random = new SecureRandom();
@@ -191,8 +229,10 @@ public class SQL {
         return new Password(hashedPass,salt);
     }
 	
-	/*
-	 * %comment% Create a player to be stocked in the database
+	/**
+	 * 
+	 * @param username is the login of the player to create in the database
+	 * @param Unencriptedpassword is the password received from the login request
 	 */
 	public static void CreatePlayer(String username, String Unencriptedpassword) {
 		String query = new String("");
@@ -217,6 +257,10 @@ public class SQL {
 		}
 	}
 	
+	/**
+	 * add in the database the game and add to the players score the score they got in the game
+	 * @throws SQLException
+	 */
 	public static void SaveGame() throws SQLException {
 		String query = new String("INSERT INTO FourXGame.Game ('player1_login','player2_login', 'player3_login', 'player4_login')\n VALUES('");
 		String queryUpdatePlayer = new String("");
