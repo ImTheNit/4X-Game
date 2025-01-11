@@ -13,7 +13,6 @@
     pageEncoding="UTF-8"%>
    
 
-<jsp:include page="score.jsp" />
 
 <!DOCTYPE html>
 <%
@@ -69,7 +68,7 @@ if (activeSession == null || activeSession.getAttribute("user") == null) {
 		const ws = new WebSocket('ws://'+window.location.host+"/4X-Game/MainController");
 		ws.onopen = () => {
             console.log('Connexion WebSocket établie ');
-            ws.send(JSON.stringify({ session: "<%=session.getAttribute("user")%>" }));
+            ws.send(JSON.stringify({ type : "join",session: "<%=session.getAttribute("user")%>" }));
         };
 
         ws.onmessage = (event) => {
@@ -91,7 +90,7 @@ if (activeSession == null || activeSession.getAttribute("user") == null) {
             const messageText = "refresh";
             if (messageText) {
                 const message = {
-                    type: 'message',
+                    type: 'refresh',
                     session: "<%=session.getAttribute("user")%>"
                 };
                 ws.send(JSON.stringify(message));
@@ -123,8 +122,11 @@ if (activeSession == null || activeSession.getAttribute("user") == null) {
         	const jsonObject = JSON.parse(newHtml);
         	const redirection = jsonObject.redirection;
         	if (redirection === 0){
-        		console.log("Fin de partie")
+        		console.log("Fin de partie");
+        		window.location.replace('/4X-Game/score.jsp');
+
         	}
+        	
         	
         }
 
@@ -134,31 +136,18 @@ if (activeSession == null || activeSession.getAttribute("user") == null) {
             contentDiv.innerHTML = NewContent;
             
         }
-        function replaceContentBattleWon(battlesWon) {
-            const contentDiv = document.getElementById('battles-won');
-            contentDiv.innerHTML = battlesWon;
-        }
-        function replaceContentSoldiers(Soldiers) {
-            const contentDiv = document.getElementById('soldiers');
-            contentDiv.innerHTML = Soldiers;
-        }
-        function replaceContentCities(cities) {
-            const contentDiv = document.getElementById('cities');
-            contentDiv.innerHTML = cities;
-        }
-        function replaceContentScore(score) {
-            const contentDiv = document.getElementById('score');
-            contentDiv.innerHTML = score;
-        }
-        function replaceContentRessources(ressources) {
-            const contentDiv = document.getElementById('ressources');
-            contentDiv.innerHTML = ressources;
-        }
-        function replaceContentButton(button) {
-            const contentDiv = document.getElementById('buttons');
-            contentDiv.innerHTML = button;
-        }
-        
+        function action(actionName){
+			fetch('/4X-Game/ActionServlet', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams({
+                    'Action': actionName,
+                })
+            });
+			Refresh();
+		}
 		</script>
 		
 		<table id='map'>
@@ -171,108 +160,6 @@ if (activeSession == null || activeSession.getAttribute("user") == null) {
 		<jsp:include page="combat.jsp" />
 		<div class="box combat" id="fight">
 		</div>
-		<script>
-			
-			
-			function moveNorth(){
-				fetch('/4X-Game/ActionServlet', {
-	                method: 'POST',
-	                headers: {
-	                    'Content-Type': 'application/x-www-form-urlencoded'
-	                },
-	                body: new URLSearchParams({
-	                    'Action': 'moveNorth',
-	                })
-	            });
-				Refresh();
-			}
-			function moveSouth(unit){
-				fetch('/4X-Game/ActionServlet', {
-	                method: 'POST',
-	                headers: {
-	                    'Content-Type': 'application/x-www-form-urlencoded'
-	                },
-	                body: new URLSearchParams({
-	                    'Action': 'moveSouth',
-	                })
-	            });
-	            Refresh();
-			}
-
-			function moveWest(){
-				fetch('/4X-Game/ActionServlet', {
-	                method: 'POST',
-	                headers: {
-	                    'Content-Type': 'application/x-www-form-urlencoded'
-	                },
-	                body: new URLSearchParams({
-	                    'Action': 'moveWest',
-	                })
-	            });
-	            Refresh();
-			}
-			function moveEast(){
-				fetch('/4X-Game/ActionServlet', {
-	                method: 'POST',
-	                headers: {
-	                    'Content-Type': 'application/x-www-form-urlencoded'
-	                },
-	                body: new URLSearchParams({
-	                    'Action': 'moveEast',
-	                })
-	            });
-	            Refresh();
-			}
-			function collect(){
-				fetch('/4X-Game/ActionServlet', {
-	                method: 'POST',
-	                headers: {
-	                    'Content-Type': 'application/x-www-form-urlencoded'
-	                },
-	                body: new URLSearchParams({
-	                    'Action': 'collect',
-	                })
-	            });
-	            Refresh();
-			}
-			function heal(){
-				fetch('/4X-Game/ActionServlet', {
-	                method: 'POST',
-	                headers: {
-	                    'Content-Type': 'application/x-www-form-urlencoded'
-	                },
-	                body: new URLSearchParams({
-	                    'Action': 'heal',
-	                })
-	            });
-	            Refresh();
-			}
-			function pass(){
-				fetch('/4X-Game/ActionServlet', {
-	                method: 'POST',
-	                headers: {
-	                    'Content-Type': 'application/x-www-form-urlencoded'
-	                },
-	                body: new URLSearchParams({
-	                    'Action': 'pass',
-	                })
-	            });
-	            Refresh();
-			}
-			function recruitSoldier(){
-				fetch('/4X-Game/ActionServlet', {
-	                method: 'POST',
-	                headers: {
-	                    'Content-Type': 'application/x-www-form-urlencoded'
-	                },
-	                body: new URLSearchParams({
-	                    'Action': 'recruit',
-	                })
-	            });
-	            Refresh();
-			}
-		</script>
-
 		</div>
 
 		

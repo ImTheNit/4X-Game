@@ -1,6 +1,5 @@
 package com.projet.model;
 
-import java.util.ArrayList;
 import java.util.Random;
 
 import com.projet.model.Creator.CreatorCity;
@@ -18,7 +17,9 @@ public class MapGame {
      * 
      */
     public MapGame() {
-        this(10,10);
+    	//this(4,4);
+    	this(10,10);
+        
         
     }
     private static MapGame initialiseMap() {

@@ -135,7 +135,7 @@ public class Player {
         return cities.get(index);
     }
     public boolean isDead() {
-    	//refreshDead();
+    	refreshDead();
 		return dead;
 	}
     /**
@@ -237,7 +237,10 @@ public class Player {
 				return true;
 			}else {
 				index = 0;
-				setTargetActionType(TargetActionType.SOLDIER);
+				if (getUnits().size() > 0 ) {
+					setTargetActionType(TargetActionType.SOLDIER);
+				}
+				
 				//setActivePlayerIndex((ActivePlayerIndex + 1 )% 4);
 				incrementPlayerIndex();
 				collectRessources();
@@ -249,6 +252,9 @@ public class Player {
 				return true;
 			}else {
 				index = 0;
+				if (getCities().size() > 0 ) {
+					setTargetActionType(TargetActionType.SOLDIER);
+				}
 				setTargetActionType(TargetActionType.CITY);
 				return true;
 			}
@@ -279,15 +285,19 @@ public class Player {
 	 * Refresh the value of the attribute dead
 	 */
 	private void refreshDead() {
-		if (!dead) {
-			if(cities.size()==0 && units.size()==0) {
-				dead=true;
-			}
+	
+		if((cities.size()==0 && units.size()==0 )
+				|| login=="") {
+			dead=true;
+		}else {
+			dead=false;
 		}
+	
 	}
 	
 	private void removeUnitByIndex(int index) {
 		this.units.remove(index);
+		
 	}
 	private void removeCityByIndex(int index) {
 		this.cities.remove(index);

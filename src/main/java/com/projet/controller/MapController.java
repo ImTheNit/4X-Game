@@ -2,11 +2,7 @@ package com.projet.controller;
 
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.projet.model.City;
 import com.projet.model.Forest;
@@ -16,10 +12,6 @@ import com.projet.model.TargetActionType;
 import com.projet.model.Tile;
 import com.projet.model.TileType;
 
-import jakarta.servlet.http.HttpSession;
-import jakarta.websocket.OnClose;
-import jakarta.websocket.OnMessage;
-import jakarta.websocket.OnOpen;
 import jakarta.websocket.Session;
 import jakarta.websocket.server.ServerEndpoint;
 
@@ -32,11 +24,7 @@ public class MapController {
     
     public static ObjectNode onMessage(String message, Session session,int clientId,Player p,ObjectNode jsonObject) throws IOException {
 	    
-	    try {
-	        Thread.sleep(50); // wait 50 millisecond
-	    } catch (InterruptedException e) {
-	        e.printStackTrace();
-	    }
+	    
         Tile selection = MapGame.getMap().getTile(0, 0); // default value;
 
         switch (p.getTargetActionType()) {
@@ -103,37 +91,48 @@ public class MapController {
     			&& (Player.getActivePlayerIndex()==Player.getPlayerIndexByLogin(p.getLogin()))
     			) {
     		
+    		System.out.println("Next expected action for : " + p.getTargetActionType() + " indice : " +p.getIndex());
     		//case of a soldier
     		
-    		if (p.getTargetActionType()==TargetActionType.SOLDIER) {
+    		if (p.getTargetActionType()==TargetActionType.SOLDIER ) { // remaining unit have top play
 
-        		ret += "<button class='button' onclick='moveNorth()'>Move To North</button>"
-        	    		+ "		<button class='button' onclick='moveWest()'>Move To West</button>"
-        	    		+ "		<button class='button' onclick='moveSouth()'>Move To South</button>"
-        	    		+ "		<button class='button' onclick='moveEast()'>Move To East</button>";
-        		//position
-        		int x = p.getUnits().get(p.getIndex()).getPositionX();
-        		int y = p.getUnits().get(p.getIndex()).getPositionY();
+    			if (p.getUnits().size()>0) {
+    				ret += "		<button class='button' onclick='action(\"moveNorth\")'>Move To North</button>"
+            	    		+ "		<button class='button' onclick='action(\"moveWest\")'>Move To West</button>"
+            	    		+ "		<button class='button' onclick='action(\"moveSouth\")'>Move To South</button>"
+            	    		+ "		<button class='button' onclick='action(\"moveEast\")'>Move To East</button>";
+            		//position
+            		int x = p.getUnits().get(p.getIndex()).getPositionX();
+            		int y = p.getUnits().get(p.getIndex()).getPositionY();
+            		
+            		if (MapGame.getMap().getTile(x, y).getType()==TileType.FOREST 
+            				&& ((Forest)MapGame.getMap().getTile(x, y)).getProductionRessources()>0) {
+            			ret += "<button class='button' onclick='action(\"collect\")'>Collect Ressources</button>";
+            		}
+            		if (p.getUnits().get(p.getIndex()).getDefence()<p.getUnits().get(p.getIndex()).getMaxDefence()) {
+            			ret += "<button class='button' onclick='action(\"heal\")'>Heal</button>";
+            		}
+            		
+            	    ret += "<button class='button' onclick='action(\"pass\")'>Pass</button>";
+    			}else {
+    				p.incrementAction();
+    				System.out.println("Next expected action for : " + p.getTargetActionType() + " indice : " +p.getIndex());
+    			}
         		
-        		if (MapGame.getMap().getTile(x, y).getType()==TileType.FOREST 
-        				&& ((Forest)MapGame.getMap().getTile(x, y)).getProductionRessources()>0) {
-        			ret += "<button class='button' onclick='collect()'>Collect Ressources</button>";
-        		}
-        		if (p.getUnits().get(p.getIndex()).getDefence()<p.getUnits().get(p.getIndex()).getMaxDefence()) {
-        			ret += "<button class='button' onclick='heal()'>Heal</button>";
-        		}
-        		
-        	    ret += "<button class='button' onclick='pass()'>Pass</button>";
     		}
-    		else if (p.getTargetActionType()==TargetActionType.CITY) {
+    		if (p.getTargetActionType()==TargetActionType.CITY && p.getCities().size()>0) {
 
     			if (p.getProductionPoints()>=City.costRecruitement 
     					&& selection.getUnit() == null) {
-    				ret += "<button class='button' onclick='recruitSoldier()'>Recruit a unit</button>";
+    				ret += "<button class='button' onclick='action(\"recruit\")'>Recruit a unit</button>";
     			}
-    			ret += "<button class='button' onclick='pass()'>Pass</button>";
+    			ret += "<button class='button' onclick='action(\"pass\")'>Pass</button>";
     			
     			
+    		}else {
+    			if (p.isDead()) {
+    				System.out.println("Le joueur est mort");
+    			}
     		}
     	}
     	
