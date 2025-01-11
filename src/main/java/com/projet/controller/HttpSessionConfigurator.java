@@ -55,9 +55,9 @@ public class HttpSessionConfigurator extends ServerEndpointConfig.Configurator {
 				&& s.getAttribute("user")!=null) {
 			int j=0;
 			for (int i = 0 ; i<4;i++) {
-				if (i <getUsername().size()) { // L'index existe deja, 
-					//on vérifie que la session n'existe pas déja
-					if(s.getAttribute("user")==getUsername().get(i) ) {// il est déjà connecté
+				if (i <getUsername().size()) { // index already in
+					//we test that the session not already exist
+					if(s.getAttribute("user")==getUsername().get(i) ) {// already connect
 						sessions.remove(i);
 						username.remove(i);
 						j = 5; //break the loop
@@ -72,8 +72,7 @@ public class HttpSessionConfigurator extends ServerEndpointConfig.Configurator {
 			if ( j == 5 ) {
 				sessions.add(s);
 				username.add((String) s.getAttribute("user"));
-				System.out.println("session add to the index "+getSessions().size());
-				System.out.println("username add to the index "+getUsername().size());
+
 			}
 			
 			

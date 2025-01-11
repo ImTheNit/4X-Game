@@ -53,7 +53,7 @@ public class Forest extends Tile{
     public int collectRessources() {
     	int ret = productionRessources;
     	productionRessources=0;
-    	setImage("plain.png");
+    	setImage("forestCut.png");
     	return ret;
     }
     

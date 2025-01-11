@@ -111,10 +111,12 @@ public class City extends Tile{
     	//restore the defensePoint of the city
     	this.restoreDefensePoint();
     	//refresh map
-    	MapGame.refreshTile(getX(), getY(), this);
-
-    	
+    	MapGame.refreshTile(getX(), getY(), this);	
     }
+    
+    /**
+     * restore DefensePoint of the city to it's maximum
+     */
     private void restoreDefensePoint() {
     	defensePoints = maxDefensePoints;
     }

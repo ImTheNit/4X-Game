@@ -42,12 +42,17 @@ public class Player {
         }
     	
     }
+    
+    /**
+     * initialise playerList with empty login name
+     * @return
+     */
     private static ArrayList<Player> initialisePlayerList() {
     	ArrayList<Player> liste = new ArrayList<Player>();
-    	Player player = new Player("",0,0,0,new ArrayList<Soldier>(),new ArrayList<City>());
-		Player player2 = new Player("",0,0,0,new ArrayList<Soldier>(),new ArrayList<City>());
-		Player player3 = new Player("",0,0,0,new ArrayList<Soldier>(),new ArrayList<City>());
-		Player player4 = new Player("",0,0,0,new ArrayList<Soldier>(),new ArrayList<City>());
+    	Player player = new Player();
+		Player player2 = new Player();
+		Player player3 = new Player();
+		Player player4 = new Player();
 		liste.addAll(Arrays.asList(player, player2, player3, player4));
 		return liste;
 	}
@@ -65,18 +70,9 @@ public class Player {
      * @name Constructor without parameters
      */
     public Player() {
-    	this("Default",0,0,0,new ArrayList<Soldier>(),new ArrayList<City>());
+    	this("",0,0,0,new ArrayList<Soldier>(),new ArrayList<City>());
     }
-    /**
-     * @name Constructor with login, search in database for other infos
-     * 
-     * @param login : name of the player
-     */
-    public Player(String login) {
-    	//load data from database
-    	
-    }
-    
+   
     
     
     
@@ -225,7 +221,7 @@ public class Player {
 	
 	
 	/**
-	 * 
+	 *  increment action and collect ressource if end of turn
 	 * @return true if the same player have to play next
 	 * else return false
 	 */
@@ -241,8 +237,9 @@ public class Player {
 					setTargetActionType(TargetActionType.SOLDIER);
 				}
 				
-				//setActivePlayerIndex((ActivePlayerIndex + 1 )% 4);
 				incrementPlayerIndex();
+				
+				// end of turn
 				collectRessources();
 				return false;
 			}
@@ -387,7 +384,7 @@ public class Player {
 	
 	public static void initPlayerFromLogin(String login) {
 		int x = Player.getPlayerIndexByLogin("");
-    	if(x>=0) {//il y a un joueur non affectÃ©
+    	if(x>=0) {//il y a un joueur non affecté
     		Player.getPlayerList(x).setLogin(login);
     		
     	}
