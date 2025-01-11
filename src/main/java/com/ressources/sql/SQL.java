@@ -17,10 +17,12 @@ import java.util.Base64;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 
+import org.apache.tomcat.dbcp.dbcp2.DriverManagerConnectionFactory;
+
 public class SQL {
 	private static final String pathToDrop = "/com/ressources/sql/drop.sql";
 	private static final String pathToCreate = "/com/ressources/sql/schema.sql";
-	private static final String JDBC_URL = "jdbc:mysql://localhost:3306/fourxgame";
+	private static final String JDBC_URL = "jdbc:mysql://localhost:3306/FourXGame";
     private static final String USERNAME = "root";
     private static final String PASSWORD = "cytech0001"; 
     private static final int iterationCount=65536; 
@@ -52,7 +54,10 @@ public class SQL {
         return PASSWORD;
     }
 
-	
+    public static Connection getConnection(String url)throws SQLException, ClassNotFoundException {
+    	Class.forName("com.mysql.cj.jdbc.Driver");
+    	return DriverManager.getConnection(getJdbcUrl(), getUsername(), getPassword());
+    }
 	
 	/*
 	 * methods
@@ -94,15 +99,15 @@ public class SQL {
 	}
 	
 	public boolean createDatabase() throws SQLException {
-		executeQuery(getScriptCreate());
+		executeSelect(getScriptCreate());
 		return true;
 	}
 	public boolean dropDatabase() throws SQLException {
-		executeQuery(getScriptDrop());
+		executeSelect(getScriptDrop());
 		return true;
 	}
-	public static ResultSet executeQuery(String query) throws SQLException {
-		try (Connection connection = DriverManager.getConnection(getJdbcUrl(), getUsername(), getPassword())) {
+	public static ResultSet executeSelect(String query) throws SQLException {
+		try (Connection connection = SQL.getConnection(getJdbcUrl())) {
 	        System.out.println("Successfully connected to database");
 	        Statement statement = connection.createStatement();
 	        //content = "DROP DATABASE IF EXISTS 4XGame;";
@@ -116,11 +121,26 @@ public class SQL {
         return null;
 	}
 	
+	public static void executeInsert(String query) throws SQLException {
+		try (Connection connection = SQL.getConnection(getJdbcUrl())) {
+	        System.out.println("Successfully connected to database");
+	        Statement statement = connection.createStatement();
+	        //content = "DROP DATABASE IF EXISTS 4XGame;";
+	        System.out.println(query);
+	        statement.executeUpdate(query);
+	        return;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+		
+        return ;
+	}
+	
 	public static boolean PlayerNameTaken(String username) throws SQLException {
 		String chaine = "SELECT login, mot_de_passe AS password"
 					+" FROM player"
-					+" WHERE LOWER(login) = LOWER("+username+") AND password=";
-		ResultSet test = executeQuery(chaine);
+					+" WHERE LOWER(login) = LOWER('"+username+"') AND password=";
+		ResultSet test = executeSelect(chaine);
 		if(test ==null) {
 			return false;
 		}
@@ -134,7 +154,7 @@ public class SQL {
 		String chaine = "SELECT salt,password \n"
 					+" FROM player \n"
 					+" WHERE LOWER(login) = LOWER("+username+");";
-		ResultSet test = executeQuery(chaine);
+		ResultSet test = executeSelect(chaine);
 		if( test!=null && test.next()){//is false if the cursor is after the last row -> case of no row at all
 			Password mdp = new Password(test.getNString("password"),Base64.getDecoder().decode(test.getNString("salt")));
 			return SQL.verifyPassword(mdp, password);
@@ -184,9 +204,9 @@ public class SQL {
 		}
 		String salt = Base64.getEncoder().encodeToString(mdp.getSalt());
 		query = "INSERT INTO Player (`login`, `password`, `salt`)\n"
-				+ "VALUES ("+username+", "+mdp.getPassword()+","+salt+");";
+				+ "VALUES ('"+username+"', '"+mdp.getPassword()+"', '"+salt+"');";
 		try {
-			SQL.executeQuery(query);
+			SQL.executeInsert(query);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
