@@ -1,6 +1,20 @@
 @charset "UTF-8";
 
-
+.welcome-container {
+	    font-family: Arial, sans-serif;
+	    background-color: #f0f8ff;
+	    color: #333;
+	    text-align: center;
+	    padding: 0px;
+	    border: 2px solid #2e8b57;
+	    border-radius: 10px;
+	    width: 50%;
+	    margin: 50px auto;
+	    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+.welcome-container h1 {
+    	color: #2e8b57;
+}
 .image-container {
 	    position: relative;
 	    width:  100px;

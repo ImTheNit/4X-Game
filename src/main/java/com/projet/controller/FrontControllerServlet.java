@@ -1,6 +1,7 @@
 package com.projet.controller;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -10,6 +11,7 @@ import org.json.JSONObject;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.projet.model.Player;
+import com.ressources.sql.SQL;
 
 import jakarta.servlet.http.HttpSession;
 import jakarta.websocket.OnClose;
@@ -43,7 +45,7 @@ public class FrontControllerServlet {
     }
 
     @OnMessage
-    public void onMessage(String message, Session session) throws IOException {
+    public void onMessage(String message, Session session) throws IOException, SQLException {
         System.out.println("Message reçu : " + message);
         JSONObject type = new JSONObject(message);
 
@@ -67,6 +69,7 @@ public class FrontControllerServlet {
                 	
                 	jsonObject.put("redirection", 0);	// send a redirection signal
                 	String jsonString = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonObject);
+                	SQL.SaveGame(); 	// save the game in database
                 	clientSession.getAsyncRemote().sendText(jsonString);
                 	
                 }else {		// game continue
