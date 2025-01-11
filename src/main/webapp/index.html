@@ -3,83 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Résumé de Combat</title>
+    <title>Infobulle au Survol d'une Image</title>
     <style>
-        /*body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }*/
-        .fight-summary {
-            background-color: #fff;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            max-width: 400px;
-            width: 100%;
+        .container {
+            position: relative;
+            display: inline-block;
+        }
+        .tooltip {
+            visibility: hidden;
+            width: 200px;
+            background-color: black;
+            color: #fff;
             text-align: center;
+            border-radius: 5px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%; /* Positionne l'infobulle au-dessus de l'image */
+            left: 50%;
+            margin-left: -100px; /* Centre l'infobulle */
+            opacity: 0;
+            transition: opacity 0.3s;
         }
-        .fight-summary h2 {
-            margin-top: 0;
-            color: #333;
+        .container:hover .tooltip {
+            visibility: visible;
+            opacity: 1;
         }
-        .fight-summary .stats-fight {
-            display: flex;
-            justify-content: space-between;
-            margin: 20px 0;
-        }
-        .fight-summary .stats-fight div {
-            flex: 1;
-            margin: 0 10px;
-        }
-        .fight-summary .stats-fight div p {
-            margin: 5px 0;
-            font-size: 1.2em;
-        }
-        .fight-summary .stats-fight div span {
-            display: block;
-            font-size: 2em;
-            font-weight: bold;
-            color: #e74c3c;
-        }
-        .fight-summary .stats-fight div span.hp {
-            color: #2ecc71;
-        }
-        .fight-summary .result {
-            margin-bottom: 20px;
-        }
-        .fight-summary .result img {
-            max-width: 100px;
+        .container img {
+            width: 300px;
             height: auto;
-        }
-        .fight-summary .result p {
-            font-size: 1.2em;
-            margin: 10px 0 0;
         }
     </style>
 </head>
 <body>
-    <div class="fight-summary">
-        <h2>Résumé de Combat</h2>
-        <div class="result">
-            <img src="ressources/images/victory.png" alt="Victoire">
-            <p>Victoire</p>
-        </div>
-        <div class="stats-fight">
-            <div>
-                <p>Dégâts Infligés</p>
-                <span>150</span>
-            </div>
-            <div>
-                <p>PV Restants</p>
-                <span class="hp">50</span>
-            </div>
-        </div>
+<br><br><br><br><br>
+    <div class="container">
+        <img src="ressources/images/victory.png" alt="Image">
+        <div class="tooltip">Texte de l'infobulle</div>
     </div>
 </body>
 </html>

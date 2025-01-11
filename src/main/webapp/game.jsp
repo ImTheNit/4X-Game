@@ -148,6 +148,19 @@ if (activeSession == null || activeSession.getAttribute("user") == null) {
             });
 			Refresh();
 		}
+        
+        function reloadStylesheets() {
+            var links = document.getElementsByTagName("link");
+            for (var i = 0; i < links.length; i++) {
+                var link = links[i];
+                if (link.rel === "stylesheet") {
+                    link.href += "?ver=" + new Date().getTime();
+                }
+            }
+        }
+        window.onload = reloadStylesheets;
+        
+        
 		</script>
 		
 		<table id='map'>

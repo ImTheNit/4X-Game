@@ -1,8 +1,6 @@
 package com.projet.controller;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 
 import com.projet.model.Player;
@@ -46,7 +44,7 @@ public class LoginController extends HttpServlet{
 		    session.setAttribute("user", username);
 		    if(!Player.playerAlreadyConnected(username)) {
 		    	Player.initPlayerFromLogin(username);
-		    	System.out.println("Joueur initialisï¿½");
+		    	System.out.println("Joueur initialisé");
 		    	}
 		    response.sendRedirect("game.jsp");
 		} catch (SQLException e) {

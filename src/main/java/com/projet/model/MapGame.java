@@ -212,6 +212,7 @@ public class MapGame {
         					ret += " <img src=" + repoImage + tile[i][j].getUnit().getImage() +" alt = Soldier" + /*tile[i][j].getUnit().toString() + */" width=100 height=100  class=img2>";
         				}
         				
+        				
         				//border
         				Player p = tile[i][j].getOwnerTile();
         				
@@ -248,6 +249,30 @@ public class MapGame {
         					ret += "<img src=" + repoImage + "borderPlayer3.png alt = borderPlayer3 width=100 height=100  class=img3>";	
         					
         				}
+        				
+        				
+        				
+        				//toolTip
+        				String toolTip;
+        				if (tile[i][j].getUnit()!= null
+        						|| tile[i][j].getType()==TileType.CITY) {
+        					toolTip = "<div class='tooltip'>";
+        					if (tile[i][j].getUnit()!= null) {
+            					toolTip += "Soldat <br>PV : "+tile[i][j].getUnit().getDefence()+"/"+tile[i][j].getUnit().getMaxDefence()+"<br>";
+            				}
+            				if (tile[i][j].getType()==TileType.CITY) {
+            					City c = (City) tile[i][j];
+            					toolTip += "City <br>PV : " +c.getDefensePoints()+"/"+c.getDefensePoints();
+            				}
+            				toolTip += "</div>";
+            				
+            				ret += toolTip;
+        				}
+        				
+        				
+        				
+        				 
+        				
         				
         			}else {
         				

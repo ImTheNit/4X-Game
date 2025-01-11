@@ -19,7 +19,7 @@ public class ActionsController extends HttpServlet {
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = request.getParameter("Action");
-        System.out.println("action : " + action + " pour " + Player.getPlayerList(Player.getActivePlayerIndex()).getTargetActionType() + "[" + Player.getPlayerList(Player.getActivePlayerIndex()).getIndex() + "]") ;                 
+        System.out.println("action : " + action + " pour " + Player.getPlayerList(Player.getActivePlayerIndex()).getTargetActionType() + "[" + Player.getPlayerList(Player.getActivePlayerIndex()).getIndex() + "] of Player "+Player.getActivePlayerIndex()) ;                 
         boolean success=false;
         switch(action) {
         case "moveNorth":

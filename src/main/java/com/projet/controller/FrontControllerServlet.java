@@ -45,8 +45,6 @@ public class FrontControllerServlet {
 
         // Récupérer la valeur de la clé "type"
         String typeValue = type.getString("type");
-        
-        System.out.println("type : " + typeValue);
  
         if (typeValue.equals("join")
         		|| typeValue.equals("refresh")) {
@@ -55,7 +53,6 @@ public class FrontControllerServlet {
     	    } catch (InterruptedException e) {
     	        e.printStackTrace();
     	    }
-            System.out.println("join or refresh");
             for (Map.Entry<String, Session> entry : getClients().entrySet()) {
                 Session clientSession = entry.getValue();
                 int clientId = Integer.parseInt(entry.getKey());
@@ -83,7 +80,6 @@ public class FrontControllerServlet {
 
             }
         }else if (typeValue.equals("finalScore")){
-        	System.out.println("finalScore");
         	for (Map.Entry<String, Session> entry : getClients().entrySet()) {
                 Session clientSession = entry.getValue();
                 int clientId = Integer.parseInt(entry.getKey());
@@ -97,7 +93,6 @@ public class FrontControllerServlet {
                 
                 jsonObject = ScoreController.onMessage(message, session,clientId,p,jsonObject);
                 String jsonString = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonObject);
-                System.out.println(jsonString);
                 clientSession.getAsyncRemote().sendText(jsonString);
                 
                 
@@ -110,17 +105,15 @@ public class FrontControllerServlet {
     @OnClose
     public void onClose(Session session) {
         getClients().remove(session.getId());
-        System.out.println("session:" +getClients());
         System.out.println("session fermée : " + session.getId());
-        System.out.println("session:" +getClients());
     }
 
-    private String parseAction(String message) {
+    /*private String parseAction(String message) {
         // Implémente la logique pour extraire l'action du message JSON
         // Par exemple, utiliser une bibliothèque JSON pour parser le message
         // et retourner la valeur de l'attribut "action"
         return "map"; // Remplace par la logique réelle
-    }
+    }*/
     
     
     
@@ -162,14 +155,11 @@ public class FrontControllerServlet {
 			//System.out.println("Player.getPlayerList(i).isDead() : "+Player.getPlayerList(i).isDead()  );
 			if ( ! Player.getPlayerList(i).isDead() ) {  // player not dead
 				numberOfLiving++;
-				System.out.println(i+": numberOfLiving : " + numberOfLiving);
 			}
 			if ( Player.getPlayerList(i).getLogin()=="") {// player connected
-				numberOfNonConnected++;
-				System.out.println(i+": numberOfNonConnected : " + numberOfNonConnected);
+				numberOfNonConnected++;		
 			}
 		}
-		System.out.println("\nnumberOfLiving : " + numberOfLiving + "\nnumberOfNonConnected : " + numberOfNonConnected);
 		
 		if (numberOfLiving <= 1 && numberOfNonConnected < 3) { // un joueur ou moins et moins de 3 déco
 			return true;
