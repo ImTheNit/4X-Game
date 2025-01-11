@@ -10,6 +10,9 @@ public class Player {
 	private String login;
     private int score;
     private int productionPoints;
+    private int fightsWon;
+    private int index; // index of the Unit/City next to play
+    private TargetActionType targetActionType; // type of the next action City/Soldier 
     private ArrayList<Soldier> units;
     private ArrayList<City> cities;
     private boolean dead = false;
@@ -23,14 +26,17 @@ public class Player {
      * @param units : soldier owned by the player
      * @param cities : cities owned by the player
      */
-    public Player(String login, int score, int productionPoints, ArrayList<Soldier> units, ArrayList<City> cities) {
+    public Player(String login, int score, int productionPoints,int fightWin, ArrayList<Soldier> units, ArrayList<City> cities) {
         if (Player.getPlayerList().size()<4) {
         	this.login = login;
             this.score = score;
             this.productionPoints = productionPoints;
             this.units = units;
             this.cities = cities;
+            this.fightsWon = fightWin;
             addPlayerList(this);
+            this.setIndex(0);
+            this.setTargetActionType(TargetActionType.SOLDIER);
         }else {
         	
         }
@@ -38,10 +44,10 @@ public class Player {
     }
     private static ArrayList<Player> initialisePlayerList() {
     	ArrayList<Player> liste = new ArrayList<Player>();
-    	Player player = new Player("",0,0,new ArrayList<Soldier>(),new ArrayList<City>());
-		Player player2 = new Player("",0,0,new ArrayList<Soldier>(),new ArrayList<City>());
-		Player player3 = new Player("",0,0,new ArrayList<Soldier>(),new ArrayList<City>());
-		Player player4 = new Player("",0,0,new ArrayList<Soldier>(),new ArrayList<City>());
+    	Player player = new Player("",0,0,0,new ArrayList<Soldier>(),new ArrayList<City>());
+		Player player2 = new Player("",0,0,0,new ArrayList<Soldier>(),new ArrayList<City>());
+		Player player3 = new Player("",0,0,0,new ArrayList<Soldier>(),new ArrayList<City>());
+		Player player4 = new Player("",0,0,0,new ArrayList<Soldier>(),new ArrayList<City>());
 		liste.addAll(Arrays.asList(player, player2, player3, player4));
 		return liste;
 	}
@@ -53,13 +59,13 @@ public class Player {
      * @param c : array of city
      */
     public Player(ArrayList<Soldier> s,ArrayList<City> c) {
-    	this("Default",0,0,s,c);
+    	this("Default",0,0,0,s,c);
     }
     /**
      * @name Constructor without parameters
      */
     public Player() {
-    	this("Default",0,0,new ArrayList<Soldier>(),new ArrayList<City>());
+    	this("Default",0,0,0,new ArrayList<Soldier>(),new ArrayList<City>());
     }
     /**
      * @name Constructor with login, search in database for other infos
@@ -106,6 +112,17 @@ public class Player {
     public int getProductionPoints() {
         return productionPoints;
     }
+    
+    public int getFightsWon() {
+        return fightsWon;
+    }
+    
+    public int getIndex() {
+        return index;
+    }
+    public TargetActionType getTargetActionType() {
+    	return targetActionType;
+    }
 
     public ArrayList<Soldier> getUnits() {
         return units;
@@ -118,7 +135,14 @@ public class Player {
         return cities.get(index);
     }
     public boolean isDead() {
+    	refreshDead();
 		return dead;
+	}
+    /**
+	 * @return the activePlayerIndex
+	 */
+	public static int getActivePlayerIndex() {
+		return ActivePlayerIndex;
 	}
     /*
      *  Setters
@@ -141,9 +165,23 @@ public class Player {
     public void setProductionPoints(int productionPoints) {
         this.productionPoints = productionPoints;
     }
-
     
+    public void setFightsWon(int fightWin) {
+        this.fightsWon = fightWin;
+    }
+    public void setIndex(int index) {
+        this.index = index;
+    }
+    public void setTargetActionType(TargetActionType type) {
+    	this.targetActionType=type;
+    }
     
+	/**
+	 * @param activePlayerIndex the activePlayerIndex to set
+	 */
+	public static void setActivePlayerIndex(int activePlayerIndex) {
+		ActivePlayerIndex = activePlayerIndex;
+	}
     
     
     
@@ -185,6 +223,60 @@ public class Player {
 		this.dead = dead;
 	}
 	
+	
+	/**
+	 * 
+	 * @return true if the same player have to play next
+	 * else return false
+	 */
+	public boolean incrementAction() {
+		refreshScore();
+		if (targetActionType==TargetActionType.CITY) {
+			if (index + 1 < cities.size()) {
+				index ++;
+				return true;
+			}else {
+				index = 0;
+				if (getUnits().size() > 0 ) {
+					setTargetActionType(TargetActionType.SOLDIER);
+				}
+				
+				//setActivePlayerIndex((ActivePlayerIndex + 1 )% 4);
+				incrementPlayerIndex();
+				collectRessources();
+				return false;
+			}
+		}else if (targetActionType==TargetActionType.SOLDIER) {
+			if (index + 1 < units.size()) {
+				index ++;
+				return true;
+			}else {
+				index = 0;
+				if (getCities().size() > 0 ) {
+					setTargetActionType(TargetActionType.SOLDIER);
+				}
+				setTargetActionType(TargetActionType.CITY);
+				return true;
+			}
+		}
+		// never reach
+		return true;
+	}
+	
+	
+	/**
+	 * Change index to the next existing player
+	 */
+	private void incrementPlayerIndex() {
+		Player p = getPlayerList(ActivePlayerIndex + 1);
+
+		if (p != null
+				&& p.getLogin()!="") {
+			setActivePlayerIndex((ActivePlayerIndex + 1 )% 4);
+		}else {
+			setActivePlayerIndex(0);
+		}
+	}
 	/*
 	 * methods
 	 */
@@ -193,15 +285,19 @@ public class Player {
 	 * Refresh the value of the attribute dead
 	 */
 	private void refreshDead() {
-		if (!dead) {
-			if(cities.size()==0 && units.size()==0) {
-				dead=true;
-			}
+	
+		if((cities.size()==0 && units.size()==0 )
+				|| login=="") {
+			dead=true;
+		}else {
+			dead=false;
 		}
+	
 	}
 	
 	private void removeUnitByIndex(int index) {
 		this.units.remove(index);
+		
 	}
 	private void removeCityByIndex(int index) {
 		this.cities.remove(index);
@@ -295,6 +391,17 @@ public class Player {
     		Player.getPlayerList(x).setLogin(login);
     		
     	}
+	}
+	
+	private void collectRessources() {
+		for (int i = 0 ; i < cities.size(); i ++) {
+			getCities(i).earnRessource();
+		}
+	}
+	
+	
+	private void refreshScore() {
+		score = productionPoints + (fightsWon * 2) + (cities.size() * 5 ) + (units.size() * 3) ; 
 	}
 	
 }

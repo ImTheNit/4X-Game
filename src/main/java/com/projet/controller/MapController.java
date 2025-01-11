@@ -2,143 +2,169 @@ package com.projet.controller;
 
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.projet.model.City;
+import com.projet.model.Forest;
 import com.projet.model.MapGame;
 import com.projet.model.Player;
+import com.projet.model.TargetActionType;
+import com.projet.model.Tile;
+import com.projet.model.TileType;
 
-import jakarta.servlet.http.HttpSession;
-import jakarta.websocket.OnClose;
-import jakarta.websocket.OnMessage;
-import jakarta.websocket.OnOpen;
 import jakarta.websocket.Session;
 import jakarta.websocket.server.ServerEndpoint;
 
 @ServerEndpoint(value = "/map" , configurator = HttpSessionConfigurator.class)
 public class MapController {
     //private static final Set<Session> clients = new CopyOnWriteArraySet<>();
-    private static Map<String, Session> clients = new ConcurrentHashMap<>();
-    private static ArrayList<String> ListUsername = new ArrayList<String>();
-    @OnOpen
-    public void onOpen(Session session) {
-	    //clients.add(session);
-    	
-    	HttpSession httpSession = (HttpSession) session.getUserProperties().get(HttpSession.class.getName());
-        String username = (String) httpSession.getAttribute("user");
-        
-    	session.getUserProperties().put("usernameD", "NomUtilisateur");
-	    clients.put(session.getId(), session);
-	    
-	    addListUserName(username);
-	    System.out.println("Connexion ouverte, client : " + session.getId() + "info supp :" + username);
-	    System.out.println("Taille de la liste des unités en java : " + Player.getPlayerByLogin(username).getUnits().size());
-    }
     
-    @OnMessage
-    public void onMessage(String message, Session session) throws IOException {
-	    System.out.println("Message reçu de " + message);
+    
+    
+    
+    public static ObjectNode onMessage(String message, Session session,int clientId,Player p,ObjectNode jsonObject) throws IOException {
 	    
-        
-	    for (Map.Entry<String, Session> entry : clients.entrySet()) {
-            Session clientSession = entry.getValue();
-            int clientId = Integer.parseInt(entry.getKey());
-            String username = getListUsername(clientId);
-            String responseMessage = "Message pour "+username +"(client :" + clientId + "): " + message;
-            
-            JsonObject jsonObjectMessage = JsonParser.parseString(message).getAsJsonObject();
-            String player = getListUsername(clientId);
-            Player p = Player.getPlayerByLogin(player);
-	    	String html = MapGame.getMap().printJSP(p, MapGame.getMap().getTile(2, 2));
-	    	System.out.println(p);
-	    	
-	    	String escapedString = html.replace("\"", "\\\"");
-	    	
-	    	ObjectMapper objectMapper = new ObjectMapper();
-	        ObjectNode jsonObject = objectMapper.createObjectNode();
-	    	
-	        jsonObject.put("html", escapedString);
-	        
-	        //ajouter les stats pour les actualiser
-	        jsonObject.put("battlesWon",0);
-	        jsonObject.put("soldiers",p.getUnits().size());
-	        jsonObject.put("cities",p.getCities().size());
-	        jsonObject.put("score",p.getScore());
-	        jsonObject.put("ressources",p.getProductionPoints());
-	        
-	        try {
-	            String jsonString = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonObject);
-	            System.out.println(jsonString);
-	            
-	            clientSession.getAsyncRemote().sendText(jsonString);
-	        } catch (Exception e) {
-	            e.printStackTrace();
-	        }
-           System.out.println("Unité "+ Player.getPlayerList(0).getUnits());
-           System.out.println(Player.getPlayerByLogin("admin").getUnits().size());
-           System.out.println("map :" +MapGame.getMap().getTile(0, 0).getUnit());
-           
-           System.out.println("Taille de la liste des unités en java sur récéption d'un message : " + Player.getPlayerByLogin(username).getUnits().size());
+	    
+        Tile selection = MapGame.getMap().getTile(0, 0); // default value;
+
+        switch (p.getTargetActionType()) {
+        case CITY:
+        	if(p.getCities().size()>0) {
+        		int x =p.getCities(p.getIndex()).getX();
+            	int y =p.getCities(p.getIndex()).getY();
+            	selection = MapGame.getMap().getTile(x, y);
+        	}
+        	break;
+        	
+        case SOLDIER:
+        	if (p.getUnits().size()>0) {
+        		int x1 = p.getUnits().get(p.getIndex()).getPositionX();
+            	int y1 = p.getUnits().get(p.getIndex()).getPositionY();
+            	selection = MapGame.getMap().getTile(x1, y1);
+        	}
+        	break;
+        	
+        default :
+        	System.out.println("default value for selection");
+        	selection = MapGame.getMap().getTile(0, 0); // default value
+        	break;
         }
+
+        
+    	String html = MapGame.getMap().printJSP(p, selection);
+    	String button = getButtonHTML(p,selection);
+    	
+    	
+    	String escapedStringMap = html.replace("\"", "\\\"");
+    	
+        jsonObject.put("action","map");
+        jsonObject.put("html", escapedStringMap);
+        
+        //ajouter les stats pour les actualiser
+        jsonObject.put("battlesWon",p.getFightsWon());
+        jsonObject.put("soldiers",p.getUnits().size());
+        jsonObject.put("cities",p.getCities().size());
+        jsonObject.put("score",p.getScore());
+        jsonObject.put("ressources",p.getProductionPoints());
+        
+        jsonObject.put("button", button);
+
+        
+        return jsonObject; 
+    }
 	    
-	    
-		    /*
-		    	//System.out.println(Map.getMap().printJSP(Player.getPlayerList(0), Map.getMap().getTile(0, 0)));
-		    	
-		    	JsonObject jsonObjectMessage = JsonParser.parseString(message).getAsJsonObject();
-		    	
-		    	
-		    	//String player = jsonObjectMessage.get("session").getAsString();
-		    	String player = getListUsername(clientId);
-		    	//System.out.println(player);
-		    	Player p = Player.getPlayerByLogin(player);
-		    	String html = MapGame.getMap().printJSP(p, MapGame.getMap().getTile(0, 0));
-		    	System.out.println(p);
-		    	
-		    	String escapedString = html.replace("\"", "\\\"");
-		    	
-		    	ObjectMapper objectMapper = new ObjectMapper();
-		        ObjectNode jsonObject = objectMapper.createObjectNode();
-		    	
-		        jsonObject.put("html", escapedString);
-		        
-		        try {
-		            String jsonString = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonObject);
-		            System.out.println(jsonString);
-		            
-		            //client.getAsyncRemote().sendText(jsonString);
-		        } catch (Exception e) {
-		            e.printStackTrace();
-		        }
-		    	//client.getAsyncRemote().sendText(Map.getMap().printJSP(Player.getPlayerList(0), Map.getMap().getTile(0, 0)));
-		    	//client.getAsyncRemote().sendText(message);
-		  */  
-		  }
 
     
-    @OnClose
-    public void onClose(Session session) {
-        clients.remove(session);
-        System.out.println("session fermée : " + session.getId());
-    }
     
     
     
     
-    public String getListUsername(int index) {
-    	if (ListUsername!= null && ListUsername.size()>=index) {
-    		return ListUsername.get(index);
+    
+    
+    
+    private static String getButtonHTML(Player p ,Tile selection) {
+    	// fonction générique
+    	// stocker en session le type (Ville/soldat) ainsi que son index
+    	// modifier la selection pour la cible de l'action
+    	String ret = "";
+    	if ( (p!= null)
+    			&& (Player.getActivePlayerIndex()==Player.getPlayerIndexByLogin(p.getLogin()))
+    			) {
+    		
+    		System.out.println("Next expected action for : " + p.getTargetActionType() + " indice : " +p.getIndex());
+    		//case of a soldier
+    		
+    		if (p.getTargetActionType()==TargetActionType.SOLDIER ) { // remaining unit have top play
+
+    			if (p.getUnits().size()>0) {
+    				ret += "		<button class='button' onclick='action(\"moveNorth\")'>Move To North</button>"
+            	    		+ "		<button class='button' onclick='action(\"moveWest\")'>Move To West</button>"
+            	    		+ "		<button class='button' onclick='action(\"moveSouth\")'>Move To South</button>"
+            	    		+ "		<button class='button' onclick='action(\"moveEast\")'>Move To East</button>";
+            		//position
+            		int x = p.getUnits().get(p.getIndex()).getPositionX();
+            		int y = p.getUnits().get(p.getIndex()).getPositionY();
+            		
+            		if (MapGame.getMap().getTile(x, y).getType()==TileType.FOREST 
+            				&& ((Forest)MapGame.getMap().getTile(x, y)).getProductionRessources()>0) {
+            			ret += "<button class='button' onclick='action(\"collect\")'>Collect Ressources</button>";
+            		}
+            		if (p.getUnits().get(p.getIndex()).getDefence()<p.getUnits().get(p.getIndex()).getMaxDefence()) {
+            			ret += "<button class='button' onclick='action(\"heal\")'>Heal</button>";
+            		}
+            		
+            	    ret += "<button class='button' onclick='action(\"pass\")'>Pass</button>";
+    			}else {
+    				p.incrementAction();
+    				System.out.println("Next expected action for : " + p.getTargetActionType() + " indice : " +p.getIndex());
+    			}
+        		
+    		}
+    		if (p.getTargetActionType()==TargetActionType.CITY && p.getCities().size()>0) {
+
+    			if (p.getProductionPoints()>=City.costRecruitement 
+    					&& selection.getUnit() == null) {
+    				ret += "<button class='button' onclick='action(\"recruit\")'>Recruit a unit</button>";
+    			}
+    			ret += "<button class='button' onclick='action(\"pass\")'>Pass</button>";
+    			
+    			
+    		}else {
+    			if (p.isDead()) {
+    				System.out.println("Le joueur est mort");
+    			}
+    		}
     	}
-    	return "Void";
-    }
-    private void addListUserName(String s) {
     	
-    	ListUsername.add(s);
+    	
+    	return ret;
     }
+
+	
+    
+	public void sendMessage(Session clientSession, String jsonString) {
+	    // Fonction pour vérifier l'état de la session et envoyer le message
+	    Runnable checkAndSend = new Runnable() {
+	        @Override
+	        public void run() {
+	            if (clientSession != null && clientSession.isOpen()) {
+	                clientSession.getAsyncRemote().sendText(jsonString);
+	                System.out.println("Message envoyé : " + jsonString);
+	            } else {
+	                System.out.println("La session n'est pas encore ouverte, attente...");
+	                try {
+	                    Thread.sleep(100); // Attendre 100ms avant de réessayer
+	                } catch (InterruptedException e) {
+	                    e.printStackTrace();
+	                }
+	                run(); // Réessayer
+	            }
+	        }
+	    };
+
+	    // Lancer la vérification et l'envoi
+	    checkAndSend.run();
+	}
+
+    
 }

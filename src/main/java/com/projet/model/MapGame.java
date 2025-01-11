@@ -17,7 +17,9 @@ public class MapGame {
      * 
      */
     public MapGame() {
-        this(10,10);
+    	//this(4,4);
+    	this(10,10);
+        
         
     }
     private static MapGame initialiseMap() {
@@ -183,11 +185,11 @@ public class MapGame {
     
     
     
-    // TODO
+    
     public String printJSP(Player player, Tile selection) {
     	String repoImage = new String("ressources/images/");
     	Tile[][] tile = getMap().getTiles();
-    	
+
     	if(tile==null) {
     		return null;
     	}else {
@@ -202,12 +204,12 @@ public class MapGame {
         				ret += "<img src=" + repoImage + "plain.png alt = background/Plain width=100 height=100  class=img1>";
         				
         				//image of the Tile
-        				ret += "<img src=" + repoImage + tile[i][j].getImage() +" alt = " + tile[i][j].toString() + " width=100 height=100  class=img1>";
+        				ret += "<img src=" + repoImage + tile[i][j].getImage() +" alt = Tile" /*+ tile[i][j].toString() */+ " width=100 height=100  class=img1>";
         				
         				//Soldier
         				if (tile[i][j].getUnit()!= null) {
         					//ret += tiles[i][j].getUnit().getImage(); //convertir en html pour incruster l'image
-        					ret += " <img src=" + repoImage + tile[i][j].getUnit().getImage() +" alt = " + tile[i][j].getUnit().toString() + " width=100 height=100  class=img2>";
+        					ret += " <img src=" + repoImage + tile[i][j].getUnit().getImage() +" alt = Soldier" + /*tile[i][j].getUnit().toString() + */" width=100 height=100  class=img2>";
         				}
         				
         				//border
@@ -221,6 +223,10 @@ public class MapGame {
         				//Current Player 
         				}else if(p.equals(player)){
         					ret += "<img src=" + repoImage + "borderActivePlayer.png alt = borderActivePlayer width=100 height=100  class=img3>";
+        					
+        					// Non connnected player
+        				}else if (p.getLogin()==""){
+        					//TODO cadre noir ? 
         					
         					//player 0
         				}else if (p.equals(Player.getPlayerList(0))){
@@ -242,7 +248,6 @@ public class MapGame {
         					ret += "<img src=" + repoImage + "borderPlayer3.png alt = borderPlayer3 width=100 height=100  class=img3>";	
         					
         				}
-        				//System.out.println("["+i+"]["+j+" : "+tiles[i][j].getOwnerTile());
         				
         			}else {
         				
@@ -251,7 +256,6 @@ public class MapGame {
         			ret += "</div></td>";
         		}
         	}
-    		//System.out.println(Player.getPlayerList());
     		return ret;
     	}
     }

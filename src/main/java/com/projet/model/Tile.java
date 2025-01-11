@@ -110,10 +110,14 @@ public abstract class Tile {
      * @param s : the soldier to add to the Tile
      */
     void addUnit(Soldier s) {
-    	if(unit!=null 
-    			&& s.getPositionX() == x
-    			&& s.getPositionY() == y) {
+    	if(unit==null		// not already something
+    			&& s != null
+    			//&& s.getPositionX() == x
+    			//&& s.getPositionY() == y
+    			) {
     		this.setUnit(s);
+    		MapGame.getMap().getTile(x, y).setUnit(unit);
+    	}else {
     	}
     	
     }
@@ -138,11 +142,9 @@ public abstract class Tile {
     public Player getOwnerTile() {
     	
     	//City
-    	//System.out.println(getType());
     	if (getType()==TileType.CITY) {
     		return ((City) this).getOwner();
-    	}else if(getUnit()!=null && getUnit().getOwner()!=null) {
-    		System.out.println("Owner found");
+    	}else if(getUnit()!=null && getUnit().getOwner()!=null) { //Owner found
     		return getUnit().getOwner();
     	}
     	return new Player();

@@ -2,6 +2,8 @@ package com.projet.model;
 
 import java.util.Random;
 
+import com.projet.controller.FightController;
+
 public class Soldier {
 	
 	/**
@@ -105,47 +107,51 @@ public class Soldier {
 	 */
 	//deplacement 
 	public boolean moveNorth() {
-		return move(X, Y - 1);
+		return move(X - 1, Y );
 	}
 	public boolean moveSouth() {
-		System.out.println("déplacement au sud");
-		return move(X, Y + 1);
+		return move(X + 1, Y );
 	}
 	public boolean moveWest() {
-		return move(X - 1,Y);
+		return move(X ,Y - 1);
 	}
 	public boolean moveEast() {
-		return move(X + 1, Y);
+		return move(X, Y + 1);
 	}
 	
 	//attack 
-	private void attackNorth() {
-		attack(X, Y - 1);
+	public boolean attackNorth() {
+		boolean ret = attack(X - 1, Y );
 		moveNorth();
+		return ret;
 	}
-	private void attackSouth() {
-		attack(X, Y + 1);
+	public boolean attackSouth() {
+		boolean ret = attack(X + 1, Y );
 		moveSouth();
+		return ret;
 	}
-	private void attackWest() {
-		attack(X - 1, Y);
+	public boolean attackWest() {
+		boolean ret = attack(X ,Y - 1);
 		moveWest();
+		return ret;
 	}
-	private void attackEast() {
-		attack(X + 1, Y);
+	public boolean attackEast() {
+		boolean ret = attack(X, Y + 1);
 		moveEast();
+		return ret;
 	}
 	
 	/**
 	 * heal the unit of 30 % of it's max HP
 	 */
-	private void heal() {
+	public boolean heal() {
 		int valueHeal = (int) Math.ceil(getMaxDefence()*0.3);
 		if (getDefence() + valueHeal > getMaxDefence()) {
 			setDefence(getMaxDefence());
 		}else {
 			setDefence(getDefence() + valueHeal);
 		}
+		return true;
 	}
 	
 	//collect ressource (Forest)
@@ -154,7 +160,7 @@ public class Soldier {
 	 * @return the amount of collected ressources from the forest
 	 * @return 0 if the tile is not a Forest or no ressources collectable
 	 */
-	private int collectRessource() {
+	public int amountRessources() {
 		if (MapGame.getMap().getTile(X, Y).getType()==TileType.FOREST 
 				&& ((Forest) MapGame.getMap().getTile(X, Y)).getProductionRessources() > 0 ){
 			 return ((Forest) MapGame.getMap().getTile(X, Y)).collectRessources();
@@ -163,6 +169,15 @@ public class Soldier {
 			}
 	}
 	
+	public boolean collectRessource() {
+		int r = amountRessources();
+		if (r!=0) {
+			getOwner().setProductionPoints(getOwner().getProductionPoints() + r);
+			return true;
+		}else {
+			return false;
+		}
+	}
 	
 	
 	/*
@@ -184,14 +199,13 @@ public class Soldier {
 				) {
 			return false;
 		}else {// deplacement
+			
 			MapGame.getMap().getTile(x, y).addUnit(this);
+			
 			MapGame.getMap().getTile(X, Y).removeUnit();
 			setPositionX(x);
 			setPositionY(y);
 			System.out.println("deplacement vers [" + x + "][" + y +"]");
-			System.out.println("Ancienne case :" + MapGame.getMap().getTile(x, y).getUnit());
-			System.out.println("Nouvelle case :" + MapGame.getMap().getTile(X, Y).getUnit());
-			//MapGame.refreshTile(x, y,MapGame.getMap().getTile(X, Y) );
 			return true;
 		}
 	}
@@ -227,32 +241,37 @@ public class Soldier {
 	 * @param x : Position x of the target 
 	 * @param y : Position y of the target 
 	 */
-	private void attack (int x, int y) {
+	private boolean attack (int x, int y) {
 		// ennemy unit
 		// enemy city
 		Tile target = MapGame.getMap().getTile(x, y);
+		if (!validTarget(x, y)) {
+			return false;
+		}
 		if (target.getType()==TileType.CITY 
-				&& (((City)target).getOwner() == null)
-					||(((City)target).getOwner() != owner)){ // ennemy or neutral city
-			attack((City)target);
+				&& ((((City)target).getOwner() == null)
+					||(((City)target).getOwner() != owner))){ // ennemy or neutral city
+			return attack((City)target);
 		}else if (target.getUnit() != null						// unit on the target Tile
 				&& target.getUnit().getOwner()!= owner) {		// from another player
-			attack(target.getUnit());
+			return attack(target.getUnit());
 			
 		}
+		return false;
 	}
 	/**
 	 * 
 	 * @param target : Soldier or City to target 
 	 */
-	private void attack(Object target) {
+	private boolean attack(Object target) {
 		if (target instanceof Soldier) {
-			attackSoldier((Soldier)target);
+			return attackSoldier((Soldier)target);
 		}else if(target instanceof City){
-			attackCity((City)target);
+			return attackCity((City)target);
 		}else {
 			//wrong type for target
 			System.out.println("Wrong type for target");
+			return false;
 		}
 	}
 	
@@ -261,40 +280,53 @@ public class Soldier {
 	 * deal damage and kill the target if enough damage is done
 	 * @param target : the soldier target by the attack
 	 */
-	private void attackSoldier(Soldier target) {
+	private boolean attackSoldier(Soldier target) {
 		if (target != null) {
+			FightController.setIsFight(true);
 			Random random = new Random();
 			int powerOfHit = random.nextInt(getSizeDice()); // generate a number between 0 and sizeDice
-			
+			FightController.setLastDamageDealt(powerOfHit);
 			if (powerOfHit>=target.getDefence()) {
 				target.kill();
-				
+				FightController.setRemainingHp(0);
+				winFight();
 			}else {
 				target.setDefence(target.getDefence()-powerOfHit); // deal damage
+				FightController.setRemainingHp(target.getDefence());
 			}
+			return true;
 		}
+		return false;
 	}
 	
 	/**
 	 * deal damage and capture the city if enough damage is done
 	 * @param target : city target by the attack
 	 */
-	private void attackCity(City target) {
+	private boolean attackCity(City target) {
+		System.out.println("attackCity");
 		if (target != null) {
+			FightController.setIsFight(true);
 			Random random = new Random();
 			int powerOfHit = random.nextInt(getSizeDice()); // generate a number between 0 and sizeDice
 			
-			if (target.getUnit() != null) { //no defensive unit
+			if (target.getUnit() == null) { //no defensive unit
+				FightController.setLastDamageDealt(powerOfHit);
+				System.out.println("No Defense hit : "+powerOfHit + " City : "+target.getDefensePoints());
 				if (powerOfHit>=target.getDefensePoints()) {
 					target.newOwner(owner); 
-									
+					FightController.setRemainingHp(0);
+					winFight();
 				}else {
 					target.setDefensePoints(target.getDefensePoints()-powerOfHit); // deal damage
+					FightController.setRemainingHp(target.getDefensePoints());
 				}
 			}else { //defensive unit
 				attackSoldier(target.getUnit());
 			}
+			return true;
 		}
+		return false;
 	}
 	
 	/**
@@ -319,6 +351,8 @@ public class Soldier {
 		return ret;
 	}
 	
-	
+	private void winFight() {
+		getOwner().setFightsWon(getOwner().getFightsWon()+1);
+	}
 	
 }
