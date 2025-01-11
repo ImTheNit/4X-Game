@@ -107,7 +107,8 @@ public class SQL {
 		return true;
 	}
 	public static ResultSet executeSelect(String query) throws SQLException {
-		try (Connection connection = SQL.getConnection(getJdbcUrl())) {
+		try  {
+			Connection connection = SQL.getConnection(getJdbcUrl());
 	        System.out.println("Successfully connected to database");
 	        Statement statement = connection.createStatement();
 	        //content = "DROP DATABASE IF EXISTS 4XGame;";
@@ -132,18 +133,24 @@ public class SQL {
         } catch (Exception e) {
             e.printStackTrace();
         }
-		
         return ;
 	}
 	
 	public static boolean PlayerNameTaken(String username) throws SQLException {
-		String chaine = "SELECT login, mot_de_passe AS password"
-					+" FROM player"
-					+" WHERE LOWER(login) = LOWER('"+username+"') AND password=";
+		String chaine = "SELECT login"
+					+" FROM fourxgame.player"
+					+" WHERE LOWER(login) = LOWER('"+username+"')";
 		ResultSet test = executeSelect(chaine);
 		if(test ==null) {
+			System.out.println("test null");
 			return false;
 		}
+		System.out.println(test.next());
+		while(test.next()) {
+			System.out.println(test.toString());
+			
+		}
+		
 		return test.next()?false:true;//is false if the cursor is after the last row -> case of no row at all
 	}
 	
@@ -152,8 +159,8 @@ public class SQL {
 	 */
 	public static boolean PlayerLoginVerification(String username, String password) throws SQLException, Exception {
 		String chaine = "SELECT salt,password \n"
-					+" FROM player \n"
-					+" WHERE LOWER(login) = LOWER("+username+");";
+					+" FROM FourXGame.player \n"
+					+" WHERE LOWER(login) = LOWER('"+username+"');";
 		ResultSet test = executeSelect(chaine);
 		if( test!=null && test.next()){//is false if the cursor is after the last row -> case of no row at all
 			Password mdp = new Password(test.getNString("password"),Base64.getDecoder().decode(test.getNString("salt")));
@@ -203,7 +210,7 @@ public class SQL {
 			e.printStackTrace();
 		}
 		String salt = Base64.getEncoder().encodeToString(mdp.getSalt());
-		query = "INSERT INTO Player (`login`, `password`, `salt`)\n"
+		query = "INSERT INTO FourXGame.Player (`login`, `password`, `salt`)\n"
 				+ "VALUES ('"+username+"', '"+mdp.getPassword()+"', '"+salt+"');";
 		try {
 			SQL.executeInsert(query);
