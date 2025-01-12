@@ -54,13 +54,13 @@ public class FrontControllerServlet {
         if (typeValue.equals("join")
         		|| typeValue.equals("refresh")) { 	// new joiners or action
         	try {
-    	        Thread.sleep(50); // wait 50 millisecond
+    	        Thread.sleep(500); // wait 500 millisecond
     	    } catch (InterruptedException e) {
     	        e.printStackTrace();
     	    }
             for (Map.Entry<String, Session> entry : getClients().entrySet()) {	//for each clients
                 Session clientSession = entry.getValue();
-                int clientId = Integer.parseInt(entry.getKey());
+                int clientId = Integer.parseInt(entry.getKey()); // attention, après 9 -> a //hexadecimal
                 ObjectMapper objectMapper = new ObjectMapper();
                 ObjectNode jsonObject = objectMapper.createObjectNode();
                 
@@ -69,7 +69,7 @@ public class FrontControllerServlet {
                 	
                 	jsonObject.put("redirection", 0);	// send a redirection signal
                 	String jsonString = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonObject);
-                	SQL.SaveGame(); 	// save the game in database
+                	//SQL.SaveGame(); 	// save the game in database
                 	clientSession.getAsyncRemote().sendText(jsonString);
                 	
                 }else {		// game continue

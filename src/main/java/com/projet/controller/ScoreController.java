@@ -45,11 +45,11 @@ public class ScoreController {
     	Player p = Player.getPlayerList(index);
     	String ret ="";
     	if (p.getLogin()!="") {	// Connected
-    		ret += "<h2>Joueur "+  (index+1)  +"</h2>\n" +
-                    "<p>Nom: Joueur "+  p.getLogin()  +"</p>\n" +
+    		ret += "<h2>Player "+  (index+1)  +"</h2>\n" +
+                    "<p>Name: "+  p.getLogin()  +"</p>\n" +
                     "<p>Score: "+  p.getScore()  +"</p>\n" +
-                    "<p>Production de Ressources: "+  p.getProductionPoints()  +"</p>\n" +
-                    "<p>Combats Gagnés: "+  p.getFightsWon()  +"</p>";
+                    "<p>Remaining Ressources: "+  p.getProductionPoints()  +"</p>\n" +
+                    "<p>Fights won: "+  p.getFightsWon()  +"</p>";
     	}else {
     		ret += "<p>No player</p>";
     	}
