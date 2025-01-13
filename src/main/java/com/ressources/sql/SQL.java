@@ -289,7 +289,7 @@ public class SQL {
 			
 		}
 		query+=");";
-		System.out.println(query);
+		//System.out.println(query);
 		SQL.executeInsert(query);
 	}
 }
