@@ -1,6 +1,7 @@
 package com.projet.controller;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -10,6 +11,7 @@ import org.json.JSONObject;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.projet.model.Player;
+import com.ressources.sql.SQL;
 
 import jakarta.servlet.http.HttpSession;
 import jakarta.websocket.OnClose;
@@ -18,6 +20,10 @@ import jakarta.websocket.OnOpen;
 import jakarta.websocket.Session;
 import jakarta.websocket.server.ServerEndpoint;
 
+
+/**
+ * this class manage all query from clients, and calls other controller to proceed to the right action
+ */
 @ServerEndpoint(value="/MainController", configurator = HttpSessionConfigurator.class)
 public class FrontControllerServlet {
 	private static Map<String, Session> clients = new ConcurrentHashMap<>();
@@ -39,48 +45,49 @@ public class FrontControllerServlet {
     }
 
     @OnMessage
-    public void onMessage(String message, Session session) throws IOException {
+    public void onMessage(String message, Session session) throws IOException, SQLException {
         System.out.println("Message reçu : " + message);
         JSONObject type = new JSONObject(message);
 
-        // Récupérer la valeur de la clé "type"
         String typeValue = type.getString("type");
  
         if (typeValue.equals("join")
-        		|| typeValue.equals("refresh")) {
+        		|| typeValue.equals("refresh")) { 	// new joiners or action
         	try {
-    	        Thread.sleep(50); // wait 50 millisecond
+    	        Thread.sleep(500); // wait 500 millisecond
     	    } catch (InterruptedException e) {
     	        e.printStackTrace();
     	    }
-            for (Map.Entry<String, Session> entry : getClients().entrySet()) {
+            for (Map.Entry<String, Session> entry : getClients().entrySet()) {	//for each clients
                 Session clientSession = entry.getValue();
-                int clientId = Integer.parseInt(entry.getKey());
+                int clientId = Integer.parseInt(entry.getKey()); // attention, après 9 -> a //hexadecimal
                 ObjectMapper objectMapper = new ObjectMapper();
                 ObjectNode jsonObject = objectMapper.createObjectNode();
                 
 
-                if (checkEnd()) {
+                if (checkEnd()) { // end of the game
                 	
-                	jsonObject.put("redirection", 0);
+                	jsonObject.put("redirection", 0);	// send a redirection signal
                 	String jsonString = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonObject);
+                	//SQL.SaveGame(); 	// save the game in database
                 	clientSession.getAsyncRemote().sendText(jsonString);
-                	System.out.println("test Fin de partie");
                 	
-                }else {
+                }else {		// game continue
                 	String player = getListUsername(clientId);
                     Player p = Player.getPlayerByLogin(player);
                     
-                    jsonObject = MapController.onMessage(message, session,clientId,p,jsonObject);
-                    jsonObject = FightController.onMessage(message, session, jsonObject);
+                    jsonObject = MapController.onMessage(message, session,clientId,p,jsonObject); // generate html code for map,buttons and stats
+                    jsonObject = FightController.onMessage(message, session, jsonObject);	// generate html code for pop up fight
+                    
                     String jsonString = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonObject);
-                    clientSession.getAsyncRemote().sendText(jsonString);
+                    
+                    clientSession.getAsyncRemote().sendText(jsonString);	//	send to clients
                 }
                 
 
             }
-        }else if (typeValue.equals("finalScore")){
-        	for (Map.Entry<String, Session> entry : getClients().entrySet()) {
+        }else if (typeValue.equals("finalScore")){	// called by final score summary page
+        	for (Map.Entry<String, Session> entry : getClients().entrySet()) {	//for each clients
                 Session clientSession = entry.getValue();
                 int clientId = Integer.parseInt(entry.getKey());
                 ObjectMapper objectMapper = new ObjectMapper();
@@ -91,9 +98,10 @@ public class FrontControllerServlet {
             	String player = getListUsername(clientId);
                 Player p = Player.getPlayerByLogin(player);
                 
-                jsonObject = ScoreController.onMessage(message, session,clientId,p,jsonObject);
+                jsonObject = ScoreController.onMessage(message, session,clientId,p,jsonObject); //generate html code for scores
                 String jsonString = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonObject);
-                clientSession.getAsyncRemote().sendText(jsonString);
+                
+                clientSession.getAsyncRemote().sendText(jsonString);	//	send to clients
                 
                 
 
@@ -108,16 +116,14 @@ public class FrontControllerServlet {
         System.out.println("session fermée : " + session.getId());
     }
 
-    /*private String parseAction(String message) {
-        // Implémente la logique pour extraire l'action du message JSON
-        // Par exemple, utiliser une bibliothèque JSON pour parser le message
-        // et retourner la valeur de l'attribut "action"
-        return "map"; // Remplace par la logique réelle
-    }*/
     
     
     
-    
+    /**
+     * 
+     * @param index of the username to get
+     * @return the name of the user
+     */
     public static String getListUsername(int index) {
     	if (ListUsername!= null && ListUsername.size()>=index) {
     		return ListUsername.get(index);
@@ -125,7 +131,10 @@ public class FrontControllerServlet {
     	return "Void";
     }
     
-    
+    /**
+     * add new user to the game
+     * @param s : username
+     */
     private void addListUserName(String s) {
     	ListUsername.add(s);
     }
@@ -152,26 +161,17 @@ public class FrontControllerServlet {
 		int numberOfLiving = 0;
 		int numberOfNonConnected = 0;
 		for (int i = 0 ; i<Player.getPlayerList().size();i++) {
-			//System.out.println("Player.getPlayerList(i).isDead() : "+Player.getPlayerList(i).isDead()  );
 			if ( ! Player.getPlayerList(i).isDead() ) {  // player not dead
 				numberOfLiving++;
 			}
-			if ( Player.getPlayerList(i).getLogin()=="") {// player connected
+			if ( Player.getPlayerList(i).getLogin()=="") {// player not connected
 				numberOfNonConnected++;		
 			}
 		}
-		
-		if (numberOfLiving <= 1 && numberOfNonConnected < 3) { // un joueur ou moins et moins de 3 déco
+		if (numberOfLiving <= 1 && numberOfNonConnected < (Player.getPlayerList().size()-1)) { // at least 1 living player and less than 3 non connected player
 			return true;
 		}
 		return false;
-		/*
-		if (numberOfLiving >= 2 
-				|| numberOfNonConnected <3) {
-			
-			return false ;
-		}
-		return true;*/
 	}
 	
 	

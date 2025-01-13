@@ -205,7 +205,6 @@ public class Soldier {
 			MapGame.getMap().getTile(X, Y).removeUnit();
 			setPositionX(x);
 			setPositionY(y);
-			System.out.println("deplacement vers [" + x + "][" + y +"]");
 			return true;
 		}
 	}
@@ -270,12 +269,10 @@ public class Soldier {
 			return attackCity((City)target);
 		}else {
 			//wrong type for target
-			System.out.println("Wrong type for target");
 			return false;
 		}
 	}
 	
-	//TODO add damaged dealt to score
 	/**
 	 * deal damage and kill the target if enough damage is done
 	 * @param target : the soldier target by the attack
@@ -304,7 +301,6 @@ public class Soldier {
 	 * @param target : city target by the attack
 	 */
 	private boolean attackCity(City target) {
-		System.out.println("attackCity");
 		if (target != null) {
 			FightController.setIsFight(true);
 			Random random = new Random();
@@ -312,7 +308,6 @@ public class Soldier {
 			
 			if (target.getUnit() == null) { //no defensive unit
 				FightController.setLastDamageDealt(powerOfHit);
-				System.out.println("No Defense hit : "+powerOfHit + " City : "+target.getDefensePoints());
 				if (powerOfHit>=target.getDefensePoints()) {
 					target.newOwner(owner); 
 					FightController.setRemainingHp(0);
@@ -339,6 +334,7 @@ public class Soldier {
 		}
 	}
 	
+	@Override
 	public String toString() {
 		String ret;
 		ret = "X : "+ X;
@@ -350,7 +346,9 @@ public class Soldier {
 		
 		return ret;
 	}
-	
+	/**
+	 * Increment fightWon counter of the owner
+	 */
 	private void winFight() {
 		getOwner().setFightsWon(getOwner().getFightsWon()+1);
 	}

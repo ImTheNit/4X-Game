@@ -33,7 +33,9 @@ if (activeSession == null || activeSession.getAttribute("user") == null) {
 
 </head>
 <body>
-	<h1>Welcome, <%=session.getAttribute("user")%> to the game</h1>
+	<div class="welcome-container">
+        <h1>Welcome, <%=session.getAttribute("user")%> to the game</h1>
+    </div>
 		<div class="stats-container">
 		<div class="stat">
             <h2>Combats Gagnés</h2>

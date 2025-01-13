@@ -22,24 +22,33 @@ public class MapGame {
         
         
     }
+    
+    /**
+     * initialise map with a City and a Soldier in each corner 
+     * @return the new Map
+     */
     private static MapGame initialiseMap() {
 		MapGame carte = new MapGame();
 
+		//create Soldier
 		Soldier s = new Soldier(0, 0, 10, Player.getPlayerList(0));
-		Soldier s2 = new Soldier(9, 0, 10, Player.getPlayerList(1));
-		Soldier s3 = new Soldier(9, 9, 10, Player.getPlayerList(2));
+		Soldier s2 = new Soldier(9, 9, 10, Player.getPlayerList(1));
+		Soldier s3 = new Soldier(9, 0, 10, Player.getPlayerList(2));
 		Soldier s4 = new Soldier(0, 9, 10, Player.getPlayerList(3));
 
+		//create Cities
 		City c = (City)carte.getTile(0, 0);;
-		City c2 = (City)carte.getTile(9, 0);
-		City c3 = (City)carte.getTile(9, 9);
+		City c2 = (City)carte.getTile(9, 9);
+		City c3 = (City)carte.getTile(9, 0);
 		City c4 = (City)carte.getTile(0, 9);
 		
+		//place Soldier on city
 		c.setUnit(s);
 		c2.setUnit(s2);
 		c3.setUnit(s3);
 		c4.setUnit(s4);
 		
+		//attribute new owner to the city
 		c.newOwner(Player.getPlayerList(0));
 		c2.newOwner(Player.getPlayerList(1));
 		c3.newOwner(Player.getPlayerList(2));
@@ -154,12 +163,15 @@ public class MapGame {
 	}
 	
 	/**
+	 * Singleton Pattern
 	 * @param map the map to set
 	 */
 	public static void setMap(MapGame map) {
 		MapGame.map = map;
 	}
 	
+	
+	@Override
 	public String toString() {
     	if(tiles==null) {
     		return null;
@@ -197,27 +209,28 @@ public class MapGame {
     		for(int i = 0; i<tile.length;i++) {
     			ret += "<tr>";
         		for(int j = 0; j<tile[i].length;j++) {
+        			Tile t = tile[i][j];
         			ret += "<td> <div class='image-container'>  ";
-        			if (tile[i][j]!=null) {
+        			if (t!=null) {
         				
         				//background
         				ret += "<img src=" + repoImage + "plain.png alt = background/Plain width=100 height=100  class=img1>";
         				
         				//image of the Tile
-        				ret += "<img src=" + repoImage + tile[i][j].getImage() +" alt = Tile" /*+ tile[i][j].toString() */+ " width=100 height=100  class=img1>";
+        				ret += "<img src=" + repoImage + t.getImage() +" alt = Tile" /*+ tile[i][j].toString() */+ " width=100 height=100  class=img1>";
         				
         				//Soldier
-        				if (tile[i][j].getUnit()!= null) {
+        				if (t.getUnit()!= null) {
         					//ret += tiles[i][j].getUnit().getImage(); //convertir en html pour incruster l'image
-        					ret += " <img src=" + repoImage + tile[i][j].getUnit().getImage() +" alt = Soldier" + /*tile[i][j].getUnit().toString() + */" width=100 height=100  class=img2>";
+        					ret += " <img src=" + repoImage + t.getUnit().getImage() +" alt = Soldier" + /*tile[i][j].getUnit().toString() + */" width=100 height=100  class=img2>";
         				}
         				
         				
         				//border
-        				Player p = tile[i][j].getOwnerTile();
+        				Player p = t.getOwnerTile();
         				
         				//selection
-        				if( (selection != null) && (tile[i][j]==selection) ) {
+        				if( (selection != null) && (t==selection) ) {
         					ret += "<img src=" + repoImage + "borderSelectedTile.png alt = borderSelectedTile width=100 height=100  class=img3>";
         					
         					
@@ -227,7 +240,7 @@ public class MapGame {
         					
         					// Non connnected player
         				}else if (p.getLogin()==""){
-        					//TODO cadre noir ? 
+        					ret += "<img src=" + repoImage + "borderNotConnected.png alt = borderNotConnected width=100 height=100  class=img3>"; 
         					
         					//player 0
         				}else if (p.equals(Player.getPlayerList(0))){
@@ -254,26 +267,34 @@ public class MapGame {
         				
         				//toolTip
         				String toolTip;
-        				if (tile[i][j].getUnit()!= null
-        						|| tile[i][j].getType()==TileType.CITY) {
+        				if (t.getUnit()!= null
+        						|| t.getType()==TileType.CITY) {
         					toolTip = "<div class='tooltip'>";
-        					if (tile[i][j].getUnit()!= null) {
-            					toolTip += "Soldat <br>PV : "+tile[i][j].getUnit().getDefence()+"/"+tile[i][j].getUnit().getMaxDefence()+"<br>";
+        					
+        					// Owner of the tile
+        					if(p.getLogin()!=null		
+        							&& p.getLogin()!="") {		// Non-Connected player
+        						toolTip += "Owner : "+p.getLogin()+"<br>";
+        					}
+        					if (p.getLogin()=="") {
+        						toolTip += "Owner : Not connected<br>";
+        					}
+        					
+        					// HP of the Soldier
+        					if (t.getUnit()!= null) {	
+            					toolTip += "Soldier <br>HP : "+t.getUnit().getDefence()+"/"+t.getUnit().getMaxDefence()+"<br>";
             				}
-            				if (tile[i][j].getType()==TileType.CITY) {
-            					City c = (City) tile[i][j];
-            					toolTip += "City <br>PV : " +c.getDefensePoints()+"/"+c.getDefensePoints();
+        					
+        					//HP of the City
+            				if (t.getType()==TileType.CITY) {	
+            					City c = (City) t;
+            					toolTip += "City <br>HP : " +c.getDefensePoints()+"/"+c.getMaxDefensePoints();
             				}
             				toolTip += "</div>";
             				
             				ret += toolTip;
         				}
-        				
-        				
-        				
-        				 
-        				
-        				
+
         			}else {
         				
         				ret += "NONE";
@@ -299,7 +320,12 @@ public class MapGame {
     	return this.getTiles()[0].length;
     }
     
-    
+    /**
+     * replace the Tile [x][y] by the Tile tile
+     * @param x : position x of the Tile to replace
+     * @param y	: position x of the Tile to replace
+     * @param tile : new Tile to add
+     */
     public static void refreshTile(int x, int y,Tile tile) {
     	if (tile!= null) {
     		MapGame.getMap().setTile(x, y, tile);

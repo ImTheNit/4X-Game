@@ -4,28 +4,24 @@ package com.projet.controller;
 import java.io.IOException;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.projet.model.City;
-import com.projet.model.Forest;
-import com.projet.model.MapGame;
 import com.projet.model.Player;
-import com.projet.model.TargetActionType;
-import com.projet.model.Tile;
-import com.projet.model.TileType;
 
 import jakarta.websocket.Session;
 import jakarta.websocket.server.ServerEndpoint;
 
+
+/**
+ * this class mainly generate Html code the score of post game
+ * All player will see the same thing
+ */
+
 @ServerEndpoint(value = "/score" , configurator = HttpSessionConfigurator.class)
-public class ScoreController {
-    //private static final Set<Session> clients = new CopyOnWriteArraySet<>();
+public class ScoreController {  
     
-    
-    
-    
+
     public static ObjectNode onMessage(String message, Session session,int clientId,Player p,ObjectNode jsonObject) throws IOException {
 	    
-	    
-        
+        //load html code for each player 
     	String scorePlayer1 = ScorePlayerByIndex(0);
     	String scorePlayer2 = ScorePlayerByIndex(1);
     	String scorePlayer3 = ScorePlayerByIndex(2);
@@ -40,55 +36,25 @@ public class ScoreController {
         
         return jsonObject; 
     }
-	    
-
-    
-    
-    
-    
-    
-    
-    
+	/**
+	 * generate html score of the player at the index 'index'
+	 * @param index of the player to generate the score
+	 * @return html code 
+	 */
     private static  String ScorePlayerByIndex(int index) {
     	Player p = Player.getPlayerList(index);
     	String ret ="";
     	if (p.getLogin()!="") {	// Connected
-    		ret += "<h2>Joueur "+  index  +"</h2>\n" +
-                    "<p>Nom: Joueur "+  p.getLogin()  +"</p>\n" +
+    		ret += "<h2>Player "+  (index+1)  +"</h2>\n" +
+                    "<p>Name: "+  p.getLogin()  +"</p>\n" +
                     "<p>Score: "+  p.getScore()  +"</p>\n" +
-                    "<p>Production de Ressources: "+  p.getProductionPoints()  +"</p>\n" +
-                    "<p>Combats Gagnés: "+  p.getFightsWon()  +"</p>";
+                    "<p>Remaining Ressources: "+  p.getProductionPoints()  +"</p>\n" +
+                    "<p>Fights won: "+  p.getFightsWon()  +"</p>";
     	}else {
-    		ret += "<p>Non rejoint</p>";
+    		ret += "<p>No player</p>";
     	}
     	
     	return ret;
     }
-   
-    
-	public void sendMessage(Session clientSession, String jsonString) {
-	    // Fonction pour vérifier l'état de la session et envoyer le message
-	    Runnable checkAndSend = new Runnable() {
-	        @Override
-	        public void run() {
-	            if (clientSession != null && clientSession.isOpen()) {
-	                clientSession.getAsyncRemote().sendText(jsonString);
-	                System.out.println("Message envoyé : " + jsonString);
-	            } else {
-	                System.out.println("La session n'est pas encore ouverte, attente...");
-	                try {
-	                    Thread.sleep(100); // Attendre 100ms avant de réessayer
-	                } catch (InterruptedException e) {
-	                    e.printStackTrace();
-	                }
-	                run(); // Réessayer
-	            }
-	        }
-	    };
-
-	    // Lancer la vérification et l'envoi
-	    checkAndSend.run();
-	}
-
-    
+       
 }

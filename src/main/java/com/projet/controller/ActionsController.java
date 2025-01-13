@@ -11,7 +11,9 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-
+/**
+ * this Class manage actions when called by the client
+ */
 @WebServlet("/ActionServlet")
 public class ActionsController extends HttpServlet {
 
@@ -44,6 +46,7 @@ public class ActionsController extends HttpServlet {
         	success=heal();
         	break;
         case "pass":
+        	// do nothing
         	success=true;
         	break;
         }
@@ -52,12 +55,14 @@ public class ActionsController extends HttpServlet {
         	Player.getPlayerList(Player.getActivePlayerIndex()).incrementAction();
         }
         
-        // Votre logique Java ici
-        
-        response.getWriter().write("Param1: " + action );
+        response.getWriter().write("action: " + action );
     }
 	
-	
+	/**
+	 * move the current Soldier to the north
+	 * @return true if successfully move
+	 * else return false
+	 */
 	private boolean moveNorth() {
 		boolean ret ;
 		Player p =Player.getPlayerList(Player.getActivePlayerIndex());
@@ -73,6 +78,11 @@ public class ActionsController extends HttpServlet {
 		return false;
     }
 	
+	/**
+	 * move the current Soldier to the south
+	 * @return true if successfully move
+	 * else return false
+	 */
 	private boolean moveSouth() {
 		boolean ret ;
 		Player p =Player.getPlayerList(Player.getActivePlayerIndex());
@@ -86,6 +96,12 @@ public class ActionsController extends HttpServlet {
 		}
 		return false;
     }
+	
+	/**
+	 * move the current Soldier to the west
+	 * @return true if successfully move
+	 * else return false
+	 */
 	private boolean moveWest() {
 		boolean ret ;
 		Player p =Player.getPlayerList(Player.getActivePlayerIndex());
@@ -99,6 +115,12 @@ public class ActionsController extends HttpServlet {
 		}
 		return false;
     }
+	
+	/**
+	 * move the current Soldier to the east
+	 * @return true if successfully move
+	 * else return false
+	 */
 	private boolean moveEast() {
 		boolean ret ;
 		Player p =Player.getPlayerList(Player.getActivePlayerIndex());
@@ -112,6 +134,12 @@ public class ActionsController extends HttpServlet {
 		}
 		return false;
     }
+	
+	/**
+	 * collect ressources of the forest
+	 * @return true if successfully collect
+	 * else return false
+	 */
 	private boolean collect() {
 		Player p =Player.getPlayerList(Player.getActivePlayerIndex());
 		if (p.getTargetActionType()==TargetActionType.SOLDIER) {
@@ -119,6 +147,12 @@ public class ActionsController extends HttpServlet {
 		}
 		return false;
     }
+	
+	/**
+	 * heal the current Soldier
+	 * @return true if successfully heal
+	 * else return false
+	 */
 	private boolean heal() {
 		Player p =Player.getPlayerList(Player.getActivePlayerIndex());
 		if (p.getTargetActionType()==TargetActionType.SOLDIER) {
@@ -126,7 +160,11 @@ public class ActionsController extends HttpServlet {
 		}
 		return false;
     }
-	
+	/**
+	 * recruit a soldier on the current City if enough ressources and space
+	 * @return true if successfully recruit
+	 * else return false
+	 */
 	private boolean recruit() {
 		Player p =Player.getPlayerList(Player.getActivePlayerIndex());
 		if (p.getTargetActionType()==TargetActionType.CITY) {

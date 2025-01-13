@@ -17,8 +17,6 @@ import java.util.Base64;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 
-import org.apache.tomcat.dbcp.dbcp2.DriverManagerConnectionFactory;
-
 import com.projet.model.Player;
 
 public class SQL {

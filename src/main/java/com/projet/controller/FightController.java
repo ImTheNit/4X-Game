@@ -1,29 +1,15 @@
 package com.projet.controller;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.projet.model.City;
-import com.projet.model.Forest;
-import com.projet.model.MapGame;
-import com.projet.model.Player;
-import com.projet.model.TargetActionType;
-import com.projet.model.Tile;
-import com.projet.model.TileType;
 
-import jakarta.servlet.http.HttpSession;
-import jakarta.websocket.OnClose;
-import jakarta.websocket.OnMessage;
-import jakarta.websocket.OnOpen;
 import jakarta.websocket.Session;
 import jakarta.websocket.server.ServerEndpoint;
 
 /**
  * Servlet implementation class CombatController
+ * This class mainly generate html code and send it back to the global controller
  */
 @ServerEndpoint(value = "/fight" , configurator = HttpSessionConfigurator.class)
 public class FightController {
@@ -60,14 +46,15 @@ public class FightController {
 		            "</div>";
 		    
 		    
-		    //setIsFight(false);
 	    }
 	    jsonObject.put("fightSummary", fightSummary);
 		return jsonObject;
 
 	}
 
-    
+    /*
+     * setters
+     */
 	/**
 	 * 
 	 * @param x

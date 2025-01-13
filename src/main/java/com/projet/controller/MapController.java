@@ -15,6 +15,12 @@ import com.projet.model.TileType;
 import jakarta.websocket.Session;
 import jakarta.websocket.server.ServerEndpoint;
 
+
+
+
+/**
+ * This class mainly generate html code and send it back to the global controller
+ */
 @ServerEndpoint(value = "/map" , configurator = HttpSessionConfigurator.class)
 public class MapController {
     //private static final Set<Session> clients = new CopyOnWriteArraySet<>();
@@ -26,8 +32,10 @@ public class MapController {
 	    
 	    
         Tile selection = MapGame.getMap().getTile(0, 0); // default value;
-
+        //load selection Tile
+        
         switch (p.getTargetActionType()) {
+        
         case CITY:
         	if(p.getCities().size()>0) {
         		int x =p.getCities(p.getIndex()).getX();
@@ -50,17 +58,18 @@ public class MapController {
         	break;
         }
 
-        
+        // load map and button content
     	String html = MapGame.getMap().printJSP(p, selection);
     	String button = getButtonHTML(p,selection);
     	
-    	
+    	//convert because of quote
     	String escapedStringMap = html.replace("\"", "\\\"");
     	
+    	// add to json object
         jsonObject.put("action","map");
         jsonObject.put("html", escapedStringMap);
         
-        //ajouter les stats pour les actualiser
+        //stats
         jsonObject.put("battlesWon",p.getFightsWon());
         jsonObject.put("soldiers",p.getUnits().size());
         jsonObject.put("cities",p.getCities().size());
@@ -81,21 +90,25 @@ public class MapController {
     
     
     
-    
+    /**
+     * return html code for button to display, depending of the player
+     * @param p : current player
+     * @param selection : tile of the next action
+     * @return
+     */
     private static String getButtonHTML(Player p ,Tile selection) {
-    	// fonction générique
-    	// stocker en session le type (Ville/soldat) ainsi que son index
-    	// modifier la selection pour la cible de l'action
     	String ret = "";
+    	
     	if ( (p!= null)
-    			&& (Player.getActivePlayerIndex()==Player.getPlayerIndexByLogin(p.getLogin()))
-    			) {
-    		
-    		//case of a soldier
-    		
+    			&& ( Player.getActivePlayerIndex()==Player.getPlayerIndexByLogin(p.getLogin()) )	) {
+ 
+    		//action for soldier
     		if (p.getTargetActionType()==TargetActionType.SOLDIER ) { // remaining unit have top play
 
+    			
     			if (p.getUnits().size()>0) {
+    				
+    				//move buttons 
     				ret += "		<button class='button' onclick='action(\"moveNorth\")'>Move To North</button>"
             	    		+ "		<button class='button' onclick='action(\"moveWest\")'>Move To West</button>"
             	    		+ "		<button class='button' onclick='action(\"moveSouth\")'>Move To South</button>"
@@ -104,62 +117,34 @@ public class MapController {
             		int x = p.getUnits().get(p.getIndex()).getPositionX();
             		int y = p.getUnits().get(p.getIndex()).getPositionY();
             		
+            		//collect button
             		if (MapGame.getMap().getTile(x, y).getType()==TileType.FOREST 
             				&& ((Forest)MapGame.getMap().getTile(x, y)).getProductionRessources()>0) {
             			ret += "<button class='button' onclick='action(\"collect\")'>Collect Ressources</button>";
             		}
+            		//heal button
             		if (p.getUnits().get(p.getIndex()).getDefence()<p.getUnits().get(p.getIndex()).getMaxDefence()) {
             			ret += "<button class='button' onclick='action(\"heal\")'>Heal</button>";
             		}
-            		
+            		//skip button
             	    ret += "<button class='button' onclick='action(\"pass\")'>Pass</button>";
     			}else {
     				p.incrementAction();
     			}
         		
     		}
-    		if (p.getTargetActionType()==TargetActionType.CITY && p.getCities().size()>0) {
+    		//action for city
+    		if (p.getTargetActionType()==TargetActionType.CITY && p.getCities().size()>0) { 
 
     			if (p.getProductionPoints()>=City.costRecruitement 
     					&& selection.getUnit() == null) {
+    				//recruit button
     				ret += "<button class='button' onclick='action(\"recruit\")'>Recruit a unit</button>";
     			}
-    			ret += "<button class='button' onclick='action(\"pass\")'>Pass</button>";
-    			
-    			
-    		}else {
+    			//skip button
+    			ret += "<button class='button' onclick='action(\"pass\")'>Pass</button>";	
     		}
     	}
-    	
-    	
     	return ret;
-    }
-
-	
-    
-	public void sendMessage(Session clientSession, String jsonString) {
-	    // Fonction pour vérifier l'état de la session et envoyer le message
-	    Runnable checkAndSend = new Runnable() {
-	        @Override
-	        public void run() {
-	            if (clientSession != null && clientSession.isOpen()) {
-	                clientSession.getAsyncRemote().sendText(jsonString);
-	                System.out.println("Message envoyé : " + jsonString);
-	            } else {
-	                System.out.println("La session n'est pas encore ouverte, attente...");
-	                try {
-	                    Thread.sleep(100); // Attendre 100ms avant de réessayer
-	                } catch (InterruptedException e) {
-	                    e.printStackTrace();
-	                }
-	                run(); // Réessayer
-	            }
-	        }
-	    };
-
-	    // Lancer la vérification et l'envoi
-	    checkAndSend.run();
-	}
-
-    
+    }    
 }
