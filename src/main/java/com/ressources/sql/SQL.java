@@ -262,18 +262,29 @@ public class SQL {
 	 * @throws SQLException
 	 */
 	public static void SaveGame() throws SQLException {
-		String query = new String("INSERT INTO FourXGame.Game ('player1_login','player2_login', 'player3_login', 'player4_login')\n VALUES('");
+		String query = new String("INSERT INTO FourXGame.Game (`player1_login`, `player2_login`, `player3_login`, `player4_login`)\nVALUES (");
 		String queryUpdatePlayer = new String("");
 		for(int i =0; i<Player.getPlayerList().size(); i++) {
-			query+= "'"+Player.getPlayerList(i).getLogin()+"'";
 			//Mise a jour du score du joueur dans la bdd
-				queryUpdatePlayer = "UPDATE FourXGame.Player"+
-						"SET Score +="+ SQL.executeSelect("SELECT Score FROM FourXGame.Player WHERE LOWER(login) = LOWER('"+Player.getPlayerList(i).getLogin()+"');").getInt("Score")+
-						"WHERE login = LOWER(‘"+Player.getPlayerList(i).getLogin()+"’);";
-				SQL.executeInsert(queryUpdatePlayer);
+				queryUpdatePlayer = "UPDATE FourXGame.Player\n"+
+				"SET Score =";
+				ResultSet test = SQL.executeSelect("SELECT Score FROM FourXGame.Player WHERE LOWER(login) = LOWER('"+Player.getPlayerList(i).getLogin()+"');");
+				//System.out.println(test.getRow());
+				if(test.next()) {
+					//System.out.println(test.getInt("Score"));
+					queryUpdatePlayer += (test.getInt("Score")+Player.getPlayerList(i).getScore())+"\n"+
+					"WHERE Lower(login) = LOWER('"+Player.getPlayerList(i).getLogin()+"');";
+					//System.out.println(queryUpdatePlayer);
+					SQL.executeInsert(queryUpdatePlayer);
+					if(i!=0) {
+						query +=",";
+					}
+					query +="'"+Player.getPlayerList(i).getLogin()+"'";
+				}
 			
 		}
-		query+=")'";
+		query+=");";
+		//System.out.println(query);
 		SQL.executeInsert(query);
 	}
 }
