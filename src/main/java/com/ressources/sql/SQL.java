@@ -264,6 +264,7 @@ public class SQL {
 		String queryUpdatePlayer = new String("");
 		for(int i =0; i<Player.getPlayerList().size(); i++) {
 			//Mise a jour du score du joueur dans la bdd
+			if(Player.getPlayerList(i).getLogin()!="") {
 				queryUpdatePlayer = "UPDATE FourXGame.Player\n"+
 				"SET Score =";
 				ResultSet test = SQL.executeSelect("SELECT Score FROM FourXGame.Player WHERE LOWER(login) = LOWER('"+Player.getPlayerList(i).getLogin()+"');");
@@ -279,10 +280,16 @@ public class SQL {
 					}
 					query +="'"+Player.getPlayerList(i).getLogin()+"'";
 				}
+			}else {
+				if(i!=0) {
+					query +=",";
+				}
+				query +="NULL";
+			}
 			
 		}
 		query+=");";
-		//System.out.println(query);
+		System.out.println(query);
 		SQL.executeInsert(query);
 	}
 }
