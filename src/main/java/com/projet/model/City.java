@@ -1,6 +1,6 @@
 package com.projet.model;
 
-public class City extends Tile{
+public class City extends Tile implements attackable{
 
     private int defensePoints;
     private int maxDefensePoints;
@@ -68,6 +68,28 @@ public class City extends Tile{
     }
     public int getMaxDefensePoints() {
 		return maxDefensePoints;
+	}
+    @Override
+    public int getIndex() {	// in the owner arraylist
+		if (owner != null 
+				&& owner.getCities() != null
+				&& owner.getCities().size() > 0) {
+			return owner.getCities().indexOf(this);
+		}else {
+			return -1;
+		}	
+	}
+	@Override
+	public String getOwnerName() {
+		if (owner != null) {
+			return owner.getLogin();
+		}else {
+			return "";
+		}
+	}
+	@Override
+	public String getTypeAttackable() {
+		return "City";
 	}
     /*
      *  Setters
@@ -159,5 +181,7 @@ public class City extends Tile{
 		ret += " owner :"+owner;
 		return ret;
 	}
+
+
    
 }

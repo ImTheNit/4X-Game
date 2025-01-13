@@ -268,7 +268,9 @@ public class MapGame {
         				//toolTip
         				String toolTip;
         				if (t.getUnit()!= null
-        						|| t.getType()==TileType.CITY) {
+        						|| t.getType()==TileType.CITY
+        						|| t.getType()==TileType.FOREST
+        						|| t.getType()==TileType.MOUTAIN) {
         					toolTip = "<div class='tooltip'>";
         					
         					// Owner of the tile
@@ -282,14 +284,32 @@ public class MapGame {
         					
         					// HP of the Soldier
         					if (t.getUnit()!= null) {	
-            					toolTip += "Soldier <br>HP : "+t.getUnit().getDefence()+"/"+t.getUnit().getMaxDefence()+"<br>";
+            					toolTip += "Soldier #"+t.getUnit().getIndex()+"<br>HP : "+t.getUnit().getDefence()+"/"+t.getUnit().getMaxDefence()+"<br>";
             				}
         					
         					//HP of the City
             				if (t.getType()==TileType.CITY) {	
             					City c = (City) t;
-            					toolTip += "City <br>HP : " +c.getDefensePoints()+"/"+c.getMaxDefensePoints();
+            					if (c.getIndex()!= -1) {
+            						toolTip += "City #"+ c.getIndex()+"<br>HP : " +c.getDefensePoints()+"/"+c.getMaxDefensePoints()
+            								+ "<br> Cost for recruiting a soldier : "+City.costRecruitement;
+            						
+            					}else {
+            						toolTip += "City <br>HP : " +c.getDefensePoints()+"/"+c.getMaxDefensePoints();
+            					}
             				}
+            				
+            				//Forest
+            				if (t.getType()==TileType.FOREST) {	
+            					Forest f = (Forest) t;       					
+            					toolTip += "Forest <br>Ressources : " +f.getProductionRessources();
+            				}
+            				
+            				// Mountain
+            				if (t.getType()==TileType.MOUTAIN) {						
+            					toolTip += "Mountain <br>You shall not pass " ;
+            				}
+            				
             				toolTip += "</div>";
             				
             				ret += toolTip;

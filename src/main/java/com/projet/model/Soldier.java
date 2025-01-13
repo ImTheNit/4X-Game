@@ -4,7 +4,7 @@ import java.util.Random;
 
 import com.projet.controller.FightController;
 
-public class Soldier {
+public class Soldier implements attackable{
 	
 	/**
 	 * position X,Y on the map
@@ -73,6 +73,26 @@ public class Soldier {
 	}
 	public String getImage() {
 		return "soldier.png";
+	}
+	@Override
+	public int getIndex() {	// in the owner arraylist
+		if (owner != null && owner.getUnits().size() > 0) {
+			return owner.getUnits().indexOf(this);
+		}else {
+			return -1;
+		}	
+	}
+	@Override
+	public String getOwnerName() {
+		if (owner != null) {
+			return owner.getLogin();
+		}else {
+			return "";
+		}
+	}
+	@Override
+	public String getTypeAttackable() {
+		return "Soldier";
 	}
 	/**
 	 * setters
@@ -279,17 +299,19 @@ public class Soldier {
 	 */
 	private boolean attackSoldier(Soldier target) {
 		if (target != null) {
+			FightController.setAttacker(this);
 			FightController.setIsFight(true);
+			FightController.setDefenser(target);
 			Random random = new Random();
-			int powerOfHit = random.nextInt(getSizeDice()); // generate a number between 0 and sizeDice
+			int powerOfHit = random.nextInt(getSizeDice()) + 1 ; // generate a number between 1 and sizeDice
 			FightController.setLastDamageDealt(powerOfHit);
+			FightController.setRemainingHp(target.getDefence()-powerOfHit);
 			if (powerOfHit>=target.getDefence()) {
 				target.kill();
-				FightController.setRemainingHp(0);
 				winFight();
 			}else {
 				target.setDefence(target.getDefence()-powerOfHit); // deal damage
-				FightController.setRemainingHp(target.getDefence());
+				
 			}
 			return true;
 		}
@@ -302,19 +324,20 @@ public class Soldier {
 	 */
 	private boolean attackCity(City target) {
 		if (target != null) {
+			FightController.setAttacker(this);
 			FightController.setIsFight(true);
+			FightController.setDefenser(target);
 			Random random = new Random();
-			int powerOfHit = random.nextInt(getSizeDice()); // generate a number between 0 and sizeDice
+			int powerOfHit = random.nextInt(getSizeDice()) + 1; // generate a number between 0 and sizeDice
 			
 			if (target.getUnit() == null) { //no defensive unit
 				FightController.setLastDamageDealt(powerOfHit);
+				FightController.setRemainingHp(target.getDefensePoints()-powerOfHit);
 				if (powerOfHit>=target.getDefensePoints()) {
-					target.newOwner(owner); 
-					FightController.setRemainingHp(0);
+					target.newOwner(owner);
 					winFight();
 				}else {
 					target.setDefensePoints(target.getDefensePoints()-powerOfHit); // deal damage
-					FightController.setRemainingHp(target.getDefensePoints());
 				}
 			}else { //defensive unit
 				attackSoldier(target.getUnit());
@@ -352,5 +375,7 @@ public class Soldier {
 	private void winFight() {
 		getOwner().setFightsWon(getOwner().getFightsWon()+1);
 	}
+	
+
 	
 }

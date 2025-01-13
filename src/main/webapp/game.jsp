@@ -33,10 +33,10 @@ if (activeSession == null || activeSession.getAttribute("user") == null) {
 
 </head>
 <body>
-	<div class="welcome-container">
-        <h1>Welcome, <%=session.getAttribute("user")%> to the game</h1>
-    </div>
-		<div class="stats-container">
+
+	
+		<div class="container">
+			<div class="box stats-container">
 		<div class="stat">
             <h2>Combats Gagnés</h2>
             <p id="battles-won"></p>
@@ -60,7 +60,6 @@ if (activeSession == null || activeSession.getAttribute("user") == null) {
         
     </div>
 		
-		<div class="container">
 		<div class="box map">
 		
 		<script>
@@ -111,7 +110,7 @@ if (activeSession == null || activeSession.getAttribute("user") == null) {
 			const buttonContent = jsonObject.button;
 			
 			
-			replaceContentHtml(htmlContent,"map");
+			replaceContentHtml(htmlContent,"mapTable");
 			replaceContentHtml(battlesWonContent,"battles-won");
 			replaceContentHtml(soldiersContent,"soldiers");
 			replaceContentHtml(citiesContent,"cities");
@@ -165,16 +164,27 @@ if (activeSession == null || activeSession.getAttribute("user") == null) {
         
 		</script>
 		
-		<table id='map'>
+		<table id='mapTable'>
 
 		</table></div>
 		
-		<div class="box buttons" id="buttons">
+		<div class="box buttonCombat">
+		
+			<div>
+			
+			</div>
+		
+		
+			<div class="buttons" id ="buttons">
+			</div>
+			
+			
+			<jsp:include page="combat.jsp" />
+			<div class="box combat" id="fight">
+			</div>
 		</div>
 		
-		<jsp:include page="combat.jsp" />
-		<div class="box combat" id="fight">
-		</div>
+		
 		</div>
 
 		

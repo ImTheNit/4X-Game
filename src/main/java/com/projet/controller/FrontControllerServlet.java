@@ -69,7 +69,7 @@ public class FrontControllerServlet {
                 	
                 	jsonObject.put("redirection", 0);	// send a redirection signal
                 	String jsonString = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonObject);
-                	//SQL.SaveGame(); 	// save the game in database
+                	SQL.SaveGame(); 	// save the game in database
                 	clientSession.getAsyncRemote().sendText(jsonString);
                 	
                 }else {		// game continue
